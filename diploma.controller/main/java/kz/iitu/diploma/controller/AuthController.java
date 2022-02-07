@@ -1,0 +1,49 @@
+package kz.iitu.diploma.controller;
+
+import kz.iitu.diploma.model.auth.ClientRegisterRecord;
+import kz.iitu.diploma.model.auth.LoginRequest;
+import kz.iitu.diploma.model.auth.SessionInfo;
+import kz.iitu.diploma.model.auth.SmsRecord;
+import kz.iitu.diploma.register.AuthRegister;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+  @Autowired
+  private AuthRegister authRegister;
+
+  @GetMapping("/sms-send")
+  public void sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
+    authRegister.smsSend(phoneNumber);
+  }
+
+  @GetMapping("/check-phone")
+  public boolean checkPhoneOnExist(@RequestParam(value = "phoneNumber") String phoneNumber) {
+    return authRegister.checkPhone(phoneNumber);
+  }
+
+  @PostMapping("/sms-check")
+  public boolean checkSms(@RequestBody SmsRecord smsRecord) {
+      return authRegister.smsCheck(smsRecord);
+  }
+
+  @PostMapping("/sign-up")
+  public SessionInfo signUp(@Valid @RequestBody ClientRegisterRecord clientRegister) {
+    return authRegister.signUp(clientRegister);
+  }
+
+  @SneakyThrows
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+    return ResponseEntity.ok(authRegister.login(loginRequest));
+  }
+
+
+}

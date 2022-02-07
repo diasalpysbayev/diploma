@@ -1,0 +1,65 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+configurations {
+    all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    all*.exclude group: "ch.qos.logback"
+    all*.exclude group: "org.slf4j", module: "log4j-over-slf4j"
+    all*.exclude group: "org.slf4j", module: "slf4j-simple"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":diploma.controller")
+
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.springframework.session:spring-session-core'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation "org.springframework.boot:spring-boot-starter-web:$springVersion"
+    implementation "org.springframework.boot:spring-boot-starter-jdbc:$springVersion"
+    implementation "org.springframework.boot:spring-boot-starter-security:$springVersion"
+
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+
+    implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:$mybatisVersion"
+    implementation "com.google.guava:guava:$guavaVersion"
+
+    implementation "org.liquibase:liquibase-core:$liquibaseVersion"
+    implementation "org.postgresql:postgresql:$postgresJdbcVersion"
+    implementation "io.springfox:springfox-boot-starter:$swagger2Version"
+    implementation 'io.springfox:springfox-swagger-ui:2.8.0'
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$springVersion"
+    testImplementation "org.testng:testng:$testngVersion"
+
+    implementation group: 'kz.greetgo.conf', name: 'greetgo.conf', version: '2.0.0'
+    implementation 'kz.greetgo.conf:greetgo.sys_params:1.2.1'
+    implementation group: 'kz.greetgo', name: 'greetgo.security', version: '0.0.12'
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+
+}
+
+bootJar {
+    enabled false
+}
+
+jar {
+    enabled true
+}
+
+test {
+    systemProperty 'spring.profiles.active', 'DEV'
+}

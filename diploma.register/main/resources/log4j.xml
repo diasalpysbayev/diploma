@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
+        <param name="Target" value="System.out"/>
+        <param name="Threshold" value="DEBUG"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="SERVER" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${user.home}/diploma.d/logs/server.log"/>
+        <param name="Threshold" value="INFO"/>
+        <param name="Append" value="true"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <param name="MaxBackupIndex" value="100"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n" />
+        </layout>
+    </appender>
+
+    <category name="org.apache">
+        <priority value="INFO"/>
+        <appender-ref ref="SERVER"/>
+    </category>
+
+    <category name="TRACE">
+        <priority value="TRACE"/>
+        <appender-ref ref="SERVER"/>
+    </category>
+
+    <category name="SQL">
+        <priority value="TRACE"/>
+        <appender-ref ref="SERVER"/>
+    </category>
+
+    <category name="DIRECT_SQL">
+        <priority value="TRACE"/>
+        <appender-ref ref="SERVER"/>
+    </category>
+
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="SERVER"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>

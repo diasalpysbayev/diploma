@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <changeSet author="dalpysbayev" id="001">
+    <sql endDelimiter=";;"><![CDATA[
+      CREATE SEQUENCE IF NOT EXISTS client_id_seq START WITH 2;
+      CREATE SEQUENCE IF NOT EXISTS sms_verification_id_seq;
+      CREATE SEQUENCE IF NOT EXISTS client_token_storage_id_seq;
+      ]]></sql>
+  </changeSet>
+
+  <changeSet author="dalpysbayev" id="002">
+    <sql endDelimiter=";;"><![CDATA[
+      create table client
+      (
+        id           bigint primary key,
+        surname      varchar(100),
+        name         varchar(100),
+        patronymic   varchar(100),
+        email        varchar(50),
+        phone_number varchar(30),
+        createdAt    timestamp default current_timestamp,
+        actual       boolean   default true
+      );
+
+      insert into client
+      values (1, 'Алпысбаев', 'Диас', 'Ерикович', 'alpysbayevdias01@gmail.com', '7701574513');
+
+      create table sms_verification
+      (
+        id           bigint primary key,
+        phone_number varchar(30),
+        code         varchar(10),
+        createdAt    timestamp default current_timestamp,
+        actual       boolean   default true
+      );
+
+      create table client_token_storage
+      (
+        id         varchar(100) primary key,
+        client_id  bigint REFERENCES client (id),
+        created_at timestamp default current_timestamp,
+        actual     boolean   default true
+      );
+      ]]></sql>
+  </changeSet>
+
+</databaseChangeLog>
