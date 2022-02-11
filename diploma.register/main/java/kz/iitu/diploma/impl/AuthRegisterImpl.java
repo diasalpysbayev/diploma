@@ -51,9 +51,9 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @Override
   public SessionInfo login(LoginRequest request) {
-    var encodedPassword = this.passwordEncoder.encode(request.getPassword());
-    var authDetail      = this.getPerson(request.getPhoneNumber(), encodedPassword);
-    var session         = this.createSession(authDetail.id);
+    String      encodedPassword = this.passwordEncoder.encode(request.getPassword());
+    AuthDetail  authDetail      = this.getPerson(request.getPhoneNumber(), encodedPassword);
+    SessionInfo session         = this.createSession(authDetail.id);
 
     ContextUtil.setContext(authDetail);
 
@@ -66,8 +66,8 @@ public class AuthRegisterImpl implements AuthRegister {
     registerRecord.password = this.passwordEncoder.encode(registerRecord.password);
     this.authDao.createClient(registerRecord);
 
-    var authDetail = new AuthDetail(registerRecord.id, registerRecord.phoneNumber);
-    var session    = this.createSession(registerRecord.id);
+    AuthDetail  authDetail = new AuthDetail(registerRecord.id, registerRecord.phoneNumber);
+    SessionInfo session    = this.createSession(registerRecord.id);
 
     ContextUtil.setContext(authDetail);
     return session;
@@ -84,7 +84,7 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   private SessionInfo createSession(Long id) {
-    var sessionInfo = this.authDao.getClientById(id);
+    SessionInfo sessionInfo = this.authDao.getClientById(id);
 
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
