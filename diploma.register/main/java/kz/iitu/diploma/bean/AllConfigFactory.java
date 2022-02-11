@@ -4,6 +4,7 @@ import kz.greetgo.conf.hot.FileConfigFactory;
 import kz.iitu.diploma.config.DbConfig;
 import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.config.SchedulerConfig;
+import kz.iitu.diploma.config.YandexApiConfig;
 import kz.iitu.diploma.util.AppFolderPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,11 @@ public class AllConfigFactory extends FileConfigFactory {
   @Bean
   public GoogleApiConfig createGoogleApiConfig() {
     return createConfig(GoogleApiConfig.class);
+  }
+
+  @Bean
+  public YandexApiConfig createYandexApiConfig() {
+    return createConfig(YandexApiConfig.class);
   }
 
 }

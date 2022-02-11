@@ -1,9 +1,13 @@
 package kz.iitu.diploma.bean;
 
 import kz.iitu.diploma.config.GoogleApiConfig;
+import kz.iitu.diploma.config.YandexApiConfig;
 import kz.iitu.diploma.inservice.google.GoogleSearchService;
 import kz.iitu.diploma.inservice.google.impl.GoogleSearchServiceFake;
 import kz.iitu.diploma.inservice.google.impl.GoogleSearchServiceReal;
+import kz.iitu.diploma.inservice.yandex.YandexSearchService;
+import kz.iitu.diploma.inservice.yandex.impl.YandexSearchServiceFake;
+import kz.iitu.diploma.inservice.yandex.impl.YandexSearchServiceReal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +16,8 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class ServiceFactory {
 
-  private final GoogleApiConfig  googleApiConfig;
+  private final GoogleApiConfig googleApiConfig;
+  private final YandexApiConfig yandexApiConfig;
 
   @Bean
   public GoogleSearchService googleSearchRegister() {
@@ -21,5 +26,10 @@ public class ServiceFactory {
     return new GoogleSearchServiceReal(googleApiConfig);
   }
 
+  @Bean
+  public YandexSearchService yandexSearchRegister() {
+    if (googleApiConfig.useFake()) return new YandexSearchServiceFake();
 
+    return new YandexSearchServiceReal(yandexApiConfig);
+  }
 }
