@@ -1,7 +1,9 @@
 package kz.iitu.diploma.inservice.google;
 
+import java.util.List;
+
 public interface GoogleSearchService {
 
-  String search(String query);
+  List<String> search(String query);
 
 }

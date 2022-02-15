@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class GoogleSearchServiceFake implements GoogleSearchService {
 
   @SneakyThrows
   @Override
-  public String search(String query) {
+  public List<String> search(String query) {
     return null;
   }
 
