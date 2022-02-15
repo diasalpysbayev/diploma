@@ -15,6 +15,8 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
 
   private final GoogleApiConfig googleApiConfig;
 
+
+
   public GoogleSearchServiceReal(GoogleApiConfig googleApiConfig) {
     this.googleApiConfig = googleApiConfig;
   }
