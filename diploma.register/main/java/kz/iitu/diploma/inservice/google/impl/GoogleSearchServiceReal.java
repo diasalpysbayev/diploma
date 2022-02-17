@@ -31,28 +31,39 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
     List<String> list         = List.of(query.split(","));
     List<String> responseList = new ArrayList<>();
 
+    String gl    = "&gl=kz";
+    String safe  = "&safe=off";
+    String asQdr = "&as_qdr=d10"; // last 10 days
+
+    StringBuilder q = new StringBuilder("&q=");
     list.forEach(str -> {
-      String  api     = this.googleApiConfig.url() + "&q=" + str.trim().replaceAll("_", "+") + "&api_key=" + this.googleApiConfig.api();
-      HttpGet request = new HttpGet(api);
+      String asEpq = "&as_epq=" + str; // обязательно быть в поиске
+      q.append(str).append("+OR+");
+    });
 
-      request.addHeader("Accept-Language", "ru");
+    q.delete(q.length() - 4, q.length());
+    q.append(gl).append(safe);
 
-      try {
-        HttpResponse   response = httpClient.execute(request);
-        BufferedReader rd       = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        StringBuilder  result   = new StringBuilder();
-        String         line;
+    String  api     = this.googleApiConfig.url() + q + "&api_key=" + this.googleApiConfig.api();
+    HttpGet request = new HttpGet(api);
 
-        while ((line = rd.readLine()) != null) {
-          result.append(line);
-        }
+    request.addHeader("Accept-Language", "ru");
 
-        responseList.add(result.toString());
-      } catch (IOException e) {
-        throw new RuntimeException();
+    try {
+      HttpResponse   response = httpClient.execute(request);
+      BufferedReader rd       = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+      StringBuilder  result   = new StringBuilder();
+      String         line;
+
+      while ((line = rd.readLine()) != null) {
+        result.append(line);
       }
 
-    });
+      responseList.add(result.toString());
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
+
 
     return responseList;
 
