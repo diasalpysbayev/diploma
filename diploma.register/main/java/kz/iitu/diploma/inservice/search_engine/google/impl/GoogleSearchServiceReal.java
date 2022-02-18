@@ -1,7 +1,7 @@
-package kz.iitu.diploma.inservice.google.impl;
+package kz.iitu.diploma.inservice.search_engine.google.impl;
 
 import kz.iitu.diploma.config.GoogleApiConfig;
-import kz.iitu.diploma.inservice.google.GoogleSearchService;
+import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

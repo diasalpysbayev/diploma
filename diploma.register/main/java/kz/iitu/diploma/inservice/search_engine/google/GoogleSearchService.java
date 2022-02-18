@@ -1,4 +1,4 @@
-package kz.iitu.diploma.inservice.google;
+package kz.iitu.diploma.inservice.search_engine.google;
 
 import java.util.List;
 

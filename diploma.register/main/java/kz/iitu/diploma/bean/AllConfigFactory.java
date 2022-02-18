@@ -37,6 +37,11 @@ public class AllConfigFactory extends FileConfigFactory {
   }
 
   @Bean
+  public DuckDuckGoApiConfig createDuckDuckGoApiConfig() {
+    return createConfig(DuckDuckGoApiConfig.class);
+  }
+
+  @Bean
   public InstagramConfig createInstagramConfig() {
     return createConfig(InstagramConfig.class);
   }
