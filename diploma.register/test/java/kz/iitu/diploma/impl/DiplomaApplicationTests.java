@@ -14,7 +14,7 @@ public class DiplomaApplicationTests extends AbstractTestParent{
     public void google_searchService() {
         GoogleSearchServiceReal googleSearch = new GoogleSearchServiceReal(googleApiConfig);
         //    Mockito.when(googleSearch.search("Test")).then()
-        var res = googleSearch.search("наркотики,сигареты,алкоголь,трава");
+        var res = googleSearch.search("наркотики,сигареты");
     }
 
 }
