@@ -46,4 +46,8 @@ public class AllConfigFactory extends FileConfigFactory {
     return createConfig(InstagramConfig.class);
   }
 
+  @Bean
+  public SmsServiceConfig createSmsServiceConfig() {
+    return createConfig(SmsServiceConfig.class);
+  }
 }

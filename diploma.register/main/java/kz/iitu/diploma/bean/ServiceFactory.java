@@ -1,9 +1,6 @@
 package kz.iitu.diploma.bean;
 
-import kz.iitu.diploma.config.DuckDuckGoApiConfig;
-import kz.iitu.diploma.config.GoogleApiConfig;
-import kz.iitu.diploma.config.InstagramConfig;
-import kz.iitu.diploma.config.YandexApiConfig;
+import kz.iitu.diploma.config.*;
 import kz.iitu.diploma.inservice.instagram.InstagramService;
 import kz.iitu.diploma.inservice.instagram.impl.InstagramServiceFake;
 import kz.iitu.diploma.inservice.instagram.impl.InstagramServiceReal;
@@ -16,9 +13,13 @@ import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceRe
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceFake;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceReal;
+import kz.iitu.diploma.inservice.sms.SmsService;
+import kz.iitu.diploma.inservice.sms.fake.SmsServiceFake;
+import kz.iitu.diploma.inservice.sms.real.SmsServiceReal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +29,8 @@ public class ServiceFactory {
   private final YandexApiConfig     yandexApiConfig;
   private final DuckDuckGoApiConfig duckDuckGoApiConfig;
   private final InstagramConfig     instagramConfig;
+  private final SmsServiceConfig    smsServiceConfig;
+  private final RestTemplate        restTemplate;
 
   @Bean
   public GoogleSearchService googleSearchRegister() {
@@ -55,5 +58,17 @@ public class ServiceFactory {
     if (instagramConfig.useFake()) return new InstagramServiceFake();
 
     return new InstagramServiceReal(instagramConfig);
+  }
+
+  @Bean
+  public SmsService smsService() {
+    if (smsServiceConfig.useFake()) {
+      return new SmsServiceFake();
+    }
+
+    SmsServiceReal serviceReal = new SmsServiceReal(smsServiceConfig.host(), smsServiceConfig.apiKey(), smsServiceConfig.from());
+    serviceReal.setRestTemplate(restTemplate);
+
+    return serviceReal;
   }
 }

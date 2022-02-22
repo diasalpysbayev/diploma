@@ -69,7 +69,6 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
       throw new RuntimeException();
     }
 
-
     return googleResult;
 
   }
