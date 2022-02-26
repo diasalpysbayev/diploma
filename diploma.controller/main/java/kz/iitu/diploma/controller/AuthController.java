@@ -5,6 +5,7 @@ import kz.iitu.diploma.model.auth.LoginRequest;
 import kz.iitu.diploma.model.auth.SessionInfo;
 import kz.iitu.diploma.model.auth.SmsRecord;
 import kz.iitu.diploma.register.AuthRegister;
+import kz.iitu.diploma.util.Json;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +20,19 @@ public class AuthController {
   @Autowired
   private AuthRegister authRegister;
 
-  @GetMapping("/sms-send")
-  public void sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
-    authRegister.smsSend(phoneNumber);
-  }
-
   @GetMapping("/check-phone")
   public boolean checkPhoneOnExist(@RequestParam(value = "phoneNumber") String phoneNumber) {
     return authRegister.checkPhone(phoneNumber);
   }
 
+  @GetMapping("/sms-send")
+  public void sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
+    authRegister.smsSend(phoneNumber);
+  }
+
   @PostMapping("/sms-check")
-  public boolean checkSms(@RequestBody SmsRecord smsRecord) {
-      return authRegister.smsCheck(smsRecord);
+  public boolean checkSms(@RequestBody @Json SmsRecord smsRecord) {
+    return authRegister.smsCheck(smsRecord);
   }
 
   @PostMapping("/sign-up")

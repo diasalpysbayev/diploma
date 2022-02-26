@@ -22,29 +22,32 @@ public interface AuthDao {
       "           from sms_verification\n" +
       "           where phone_number = #{phoneNumber}\n" +
       "             and actual = true\n" +
-      "           order by createdat desc\n" +
+      "           order by created_at desc\n" +
       "           limit 1)\n" +
       "select case when x.code = #{code} then true else false end\n" +
       "from x;")
   boolean checkCode(SmsRecord smsRecord);
 
-  @Select("select id, phone from client where phone=#{phone} and password=#{password} and actual=true")
-  AuthDetail getClientByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
+  @Select("select id, phone_number from client where phone_number=#{phoneNumber} and password=#{password} and actual=true")
+  AuthDetail getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
 
   @Select("select id, name, surname from client where id=#{id} and actual=true")
   SessionInfo getClientById(@Param("id") Long id);
 
-  @Insert("insert into client_token_storage (token_id, client_id, created_at) "
+  @Insert("insert into client_token_storage (id, client_id, created_at) "
       + "  values(#{tokenId}, #{clientId}, #{createdAt})")
   void setTokenId(@Param("tokenId") String tokenId, @Param("clientId") Long clientId, @Param("createdAt") Date createdAt);
 
-  @Select("select case when count(1) from client where phone=#{phone} and actual=true")
-  Long checkIsClientExist(@Param("phone") String phone);
+  @Select("select count(1) from client where phone_number=#{phoneNumber} and actual=true")
+  Long checkIsClientExist(@Param("phoneNumber") String phoneNumber);
 
-  @Insert("insert into client (id, phone, password) " +
-      "values(nextval('client_id_seq'), #{phoneNumber}, #{password})")
+  @Insert("insert into client (id, phone_number, password) " +
+      "values(#{id}, #{phoneNumber}, #{password})")
   void createClient(ClientRegisterRecord registerRecord);
 
   @Select("select token_id as id from client_token_storage where token_id = #{token_id} and actual = true")
-  AuthDetail getAuthDetailsByToken(@Param("ggToken") String ggToken);
+  SessionInfo getAuthDetailsByToken(@Param("ggToken") String ggToken);
+
+  @Select("select exists(select 1 from client where phone_number = #{phoneNumber});")
+  boolean checkPhone(String phoneNumber);
 }

@@ -1,12 +1,8 @@
 package kz.iitu.diploma.model.auth;
 
-import kz.iitu.diploma.util.Json;
-import lombok.Builder;
-import lombok.Data;
+import lombok.ToString;
 
-@Data
-@Json
-@Builder
+@ToString
 public class SmsRecord {
   public String phoneNumber;
   public String code;

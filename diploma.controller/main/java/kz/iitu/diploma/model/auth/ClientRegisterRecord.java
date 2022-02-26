@@ -24,5 +24,30 @@ public class ClientRegisterRecord {
 
   @NotBlank(message = "Пароль не может быть пустым")
   public String confirmPassword;
+
+  public static ClientRegisterRecordBuilder builder() {
+    return new ClientRegisterRecordBuilder();
+  }
+
+  public static class ClientRegisterRecordBuilder {
+    ClientRegisterRecord record;
+
+    public ClientRegisterRecordBuilder() {
+      record = new ClientRegisterRecord();
+    }
+
+    public ClientRegisterRecord.ClientRegisterRecordBuilder parameters(Long id, String phoneNumber, String password, String confirmPassword) {
+      this.record.id = id;
+      this.record.phoneNumber = phoneNumber;
+      this.record.password = password;
+      this.record.confirmPassword = confirmPassword;
+      return this;
+    }
+
+    public ClientRegisterRecord build() {
+      return this.record;
+    }
+  }
+
 }
 

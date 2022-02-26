@@ -2,7 +2,9 @@ package kz.iitu.diploma.impl;
 
 import kz.greetgo.security.password.PasswordEncoder;
 import kz.iitu.diploma.dao.AuthDao;
+import kz.iitu.diploma.dao.ClientDao;
 import kz.iitu.diploma.exception.DuplicatePhoneException;
+import kz.iitu.diploma.inservice.sms.SmsService;
 import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.register.AuthRegister;
 import kz.iitu.diploma.util.ContextUtil;
@@ -23,25 +25,35 @@ public class AuthRegisterImpl implements AuthRegister {
   @Autowired
   private AuthDao authDao;
 
+  @Autowired
+  private ClientDao clientDao;
+
+  @Autowired
+  private SmsService smsService;
+
   @Override
-  public void smsSend(String phone) {
-    if (!phone.isBlank()) {
+  public void smsSend(String phoneNumber) {
+    if (!phoneNumber.isBlank()) {
       var rnd    = new Random();
       var number = rnd.nextInt(999999);
       var code   = String.format("%06d", number);
 
-      var smsRecord = SmsRecord.builder()
-          .code(code)
-          .phoneNumber(phone)
-          .build();
+      var smsRecord = new SmsRecord();
+      smsRecord.code        = code;
+      smsRecord.phoneNumber = phoneNumber;
 
       authDao.insertSmsCode(smsRecord);
+      try {
+        smsService.send(phoneNumber, "Vash code " + code);
+      } catch (Exception e) {
+        throw new RuntimeException("eiVaZ9RwBW :: " + e);
+      }
     }
   }
 
   @Override
-  public boolean checkPhone(String phone) {
-    return false;
+  public boolean checkPhone(String phoneNumber) {
+    return authDao.checkPhone(phoneNumber);
   }
 
   @Override
@@ -55,26 +67,26 @@ public class AuthRegisterImpl implements AuthRegister {
     AuthDetail  authDetail      = this.getPerson(request.getPhoneNumber(), encodedPassword);
     SessionInfo session         = this.createSession(authDetail.id);
 
-    ContextUtil.setContext(authDetail);
+    ContextUtil.setContext(session);
 
     return session;
   }
 
   @Override
   public SessionInfo signUp(ClientRegisterRecord registerRecord) {
-    this.checkPhone(registerRecord);
-    registerRecord.password = this.passwordEncoder.encode(registerRecord.password);
-    this.authDao.createClient(registerRecord);
+    checkPhone(registerRecord);
+    registerRecord.id       = clientDao.nextClientId();
+    registerRecord.password = passwordEncoder.encode(registerRecord.password);
+    authDao.createClient(registerRecord);
 
-    AuthDetail  authDetail = new AuthDetail(registerRecord.id, registerRecord.phoneNumber);
-    SessionInfo session    = this.createSession(registerRecord.id);
+    SessionInfo session = createSession(registerRecord.id);
 
-    ContextUtil.setContext(authDetail);
+    ContextUtil.setContext(session);
     return session;
   }
 
   @Override
-  public AuthDetail getAuthDetailsByToken(String ggToken) {
+  public SessionInfo getAuthDetailsByToken(String ggToken) {
     return authDao.getAuthDetailsByToken(ggToken);
   }
 

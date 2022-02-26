@@ -13,7 +13,7 @@
 
   <changeSet author="dalpysbayev" id="002">
     <sql endDelimiter=";;"><![CDATA[
-      create table client
+      create table if not exists client
       (
         id           bigint primary key,
         surname      varchar(100),
@@ -21,23 +21,24 @@
         patronymic   varchar(100),
         email        varchar(50),
         phone_number varchar(30),
-        createdAt    timestamp default current_timestamp,
+        password     varchar(100),
+        created_at   timestamp default current_timestamp,
         actual       boolean   default true
       );
 
       insert into client
       values (1, 'Алпысбаев', 'Диас', 'Ерикович', 'alpysbayevdias01@gmail.com', '7701574513');
 
-      create table sms_verification
+      create table if not exists sms_verification
       (
         id           bigint primary key,
         phone_number varchar(30),
         code         varchar(10),
-        createdAt    timestamp default current_timestamp,
+        created_at    timestamp default current_timestamp,
         actual       boolean   default true
       );
 
-      create table client_token_storage
+      create table if not exists client_token_storage
       (
         id         varchar(100) primary key,
         client_id  bigint REFERENCES client (id),

@@ -11,17 +11,4 @@
       ]]></sql>
   </changeSet>
 
-  <changeSet author="dalpysbayev" id="test_table">
-    <sql endDelimiter=";;"><![CDATA[
-
-      create table test(version varchar(22));;
-      insert into test(version) values ('1.0.0');;
-
-      create table test_table (
-                                column1 varchar(10)
-      );
-
-      ]]></sql>
-  </changeSet>
-
 </databaseChangeLog>

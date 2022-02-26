@@ -32,7 +32,6 @@ public class SmsServiceReal implements SmsService {
 
     SmsResponse smsResponse = smsService.send("77071010865", "VNIMANIE NAZYM! VAM NUZHNO SROCH");
     System.out.println(smsResponse.toString());
-
   }
 
   public void setRestTemplate(RestTemplate restTemplate) {
@@ -46,9 +45,7 @@ public class SmsServiceReal implements SmsService {
 
   @Override
   public SmsResponse send(String recipient, String text) throws Exception {
-
     SmsRequest smsRequest = new SmsRequest(apiKey, recipient, text, from);
-
     return restTemplate.getForEntity(new URI(host + "?" + smsRequest.get()), SmsResponse.class).getBody();
   }
 

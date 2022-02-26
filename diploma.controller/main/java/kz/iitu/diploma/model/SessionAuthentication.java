@@ -1,16 +1,17 @@
 package kz.iitu.diploma.model;
 
 import kz.iitu.diploma.model.auth.AuthDetail;
+import kz.iitu.diploma.model.auth.SessionInfo;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class SessionAuthentication extends AbstractAuthenticationToken {
-  private final AuthDetail authDetails;
+  private final SessionInfo sessionResponse;
 
-  public SessionAuthentication(AuthDetail sessionResponse) {
+  public SessionAuthentication(SessionInfo sessionResponse) {
     super(null);
     super.setAuthenticated(true);
     super.setDetails(sessionResponse);
-    this.authDetails = sessionResponse;
+    this.sessionResponse = sessionResponse;
   }
 
   public Object getCredentials() {
@@ -18,6 +19,6 @@ public class SessionAuthentication extends AbstractAuthenticationToken {
   }
 
   public Object getPrincipal() {
-    return this.authDetails;
+    return this.sessionResponse;
   }
 }

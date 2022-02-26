@@ -2,6 +2,7 @@ package kz.iitu.diploma.bean.security.filter;
 
 import com.google.common.base.Strings;
 import kz.iitu.diploma.model.auth.AuthDetail;
+import kz.iitu.diploma.model.auth.SessionInfo;
 import kz.iitu.diploma.register.AuthRegister;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,8 +33,7 @@ public class AuthFilter implements Filter {
     String ggToken = httpRequest.getHeader(GG_TOKEN);
 
     if (!Strings.isNullOrEmpty(ggToken)) {
-
-      AuthDetail authDetails = authRegister.getAuthDetailsByToken(ggToken);
+      SessionInfo authDetails = authRegister.getAuthDetailsByToken(ggToken);
 
       if (authDetails == null || authDetails.id == null) {
         httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

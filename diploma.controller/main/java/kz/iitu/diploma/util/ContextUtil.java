@@ -2,6 +2,7 @@ package kz.iitu.diploma.util;
 
 import kz.iitu.diploma.model.SessionAuthentication;
 import kz.iitu.diploma.model.auth.AuthDetail;
+import kz.iitu.diploma.model.auth.SessionInfo;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -13,9 +14,9 @@ public class ContextUtil {
     return SecurityContextHolder.getContext();
   }
 
-  public static void setContext(AuthDetail authDetails) {
-    var authReq = new SessionAuthentication(authDetails);
-    var sc      = getContext();
+  public static void setContext(SessionInfo authDetails) {
+    SessionAuthentication authReq = new SessionAuthentication(authDetails);
+    SecurityContext sc = getContext();
     sc.setAuthentication(authReq);
   }
 }

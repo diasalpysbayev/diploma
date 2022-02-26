@@ -22,8 +22,8 @@ public class DataSourceConfiguration {
 
     pool.setDriverClassName("org.postgresql.Driver");
     pool.setJdbcUrl("jdbc:postgresql://localhost:5432/diploma");
-    pool.setUsername("postgres");
-    pool.setPassword("postgres");
+    pool.setUsername("diploma");
+    pool.setPassword("diploma");
 
     pool.setMinimumIdle(5);
 
