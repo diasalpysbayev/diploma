@@ -46,5 +46,10 @@ public class AuthController {
     return ResponseEntity.ok(authRegister.login(loginRequest));
   }
 
+  @GetMapping("/check-totp")
+  public boolean totp(@RequestParam("code") String code) {
+    return authRegister.checkTotp(code);
+  }
+
 
 }

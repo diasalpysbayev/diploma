@@ -7,7 +7,6 @@
     <sql endDelimiter=";;"><![CDATA[
       CREATE SEQUENCE IF NOT EXISTS client_id_seq START WITH 2;
       CREATE SEQUENCE IF NOT EXISTS sms_verification_id_seq;
-      CREATE SEQUENCE IF NOT EXISTS client_token_storage_id_seq;
       ]]></sql>
   </changeSet>
 
@@ -45,6 +44,15 @@
         created_at timestamp default current_timestamp,
         actual     boolean   default true
       );
+
+      create table if not exists client_key_storage
+      (
+        id           varchar(100) primary key,
+        client_id    bigint REFERENCES client (id),
+        created_at   timestamp default current_timestamp,
+        actual       boolean   default true
+        );
+
       ]]></sql>
   </changeSet>
 

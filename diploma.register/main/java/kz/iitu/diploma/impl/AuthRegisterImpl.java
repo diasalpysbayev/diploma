@@ -1,5 +1,6 @@
 package kz.iitu.diploma.impl;
 
+import com.google.zxing.WriterException;
 import kz.greetgo.security.password.PasswordEncoder;
 import kz.iitu.diploma.dao.AuthDao;
 import kz.iitu.diploma.dao.ClientDao;
@@ -7,14 +8,18 @@ import kz.iitu.diploma.exception.DuplicatePhoneException;
 import kz.iitu.diploma.inservice.sms.SmsService;
 import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.register.AuthRegister;
+import kz.iitu.diploma.register.SessionRegister;
 import kz.iitu.diploma.util.ContextUtil;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
+
+import static kz.iitu.diploma.util.AuthenticatorUtil.*;
 
 @Service
 public class AuthRegisterImpl implements AuthRegister {
@@ -30,6 +35,9 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @Autowired
   private SmsService smsService;
+
+  @Autowired
+  private SessionRegister sessionRegister;
 
   @Override
   public void smsSend(String phoneNumber) {
@@ -78,6 +86,7 @@ public class AuthRegisterImpl implements AuthRegister {
     registerRecord.id       = clientDao.nextClientId();
     registerRecord.password = passwordEncoder.encode(registerRecord.password);
     authDao.createClient(registerRecord);
+    authDao.setSecretKeyId(generateSecretKey(), registerRecord.id);
 
     SessionInfo session = createSession(registerRecord.id);
 
@@ -100,14 +109,36 @@ public class AuthRegisterImpl implements AuthRegister {
 
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
-    this.authDao.setTokenId(sessionInfo.tokenId, id, new Date());
+    authDao.setTokenId(sessionInfo.tokenId, id);
 
     return sessionInfo;
   }
 
   private void checkPhone(ClientRegisterRecord request) {
-    if (this.authDao.checkIsClientExist(request.getPhoneNumber()) != 0L) {
+    if (authDao.checkIsClientExist(request.getPhoneNumber()) != 0L) {
       throw new DuplicatePhoneException();
     }
+  }
+
+  @Override
+  public void createQRCode() {
+    String secretKey   = clientDao.getSecretKeyId(sessionRegister.getPrincipal());
+    String email       = clientDao.getEmail(sessionRegister.getPrincipal());
+    String companyName = "Diploma";
+    String barCodeUrl  = getGoogleAuthenticatorBarCode(secretKey, email, companyName);
+
+    try {
+      //todo return as file
+      generateQRCode(barCodeUrl);
+    } catch (WriterException | IOException e) {
+      throw new RuntimeException("k6c0x0K9VZ :: ", e);
+    }
+  }
+
+  @Override
+  public boolean checkTotp(String code) {
+    var id        = sessionRegister.getPrincipal();
+    var secretKey = clientDao.getSecretKeyId(id);
+    return code.equals(getTOTPCode(secretKey));
   }
 }

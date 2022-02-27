@@ -9,8 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-
 @Repository
 public interface AuthDao {
 
@@ -34,9 +32,9 @@ public interface AuthDao {
   @Select("select id, name, surname from client where id=#{id} and actual=true")
   SessionInfo getClientById(@Param("id") Long id);
 
-  @Insert("insert into client_token_storage (id, client_id, created_at) "
-      + "  values(#{tokenId}, #{clientId}, #{createdAt})")
-  void setTokenId(@Param("tokenId") String tokenId, @Param("clientId") Long clientId, @Param("createdAt") Date createdAt);
+  @Insert("insert into client_token_storage (id, client_id) "
+      + "  values(#{tokenId}, #{clientId})")
+  void setTokenId(@Param("tokenId") String tokenId, @Param("clientId") Long clientId);
 
   @Select("select count(1) from client where phone_number=#{phoneNumber} and actual=true")
   Long checkIsClientExist(@Param("phoneNumber") String phoneNumber);
@@ -50,4 +48,8 @@ public interface AuthDao {
 
   @Select("select exists(select 1 from client where phone_number = #{phoneNumber});")
   boolean checkPhone(String phoneNumber);
+
+  @Insert("insert into client_key_storage (id, client_id) "
+      + "  values(#{id}, #{clientId})")
+  void setSecretKeyId(@Param("id") String id, @Param("clientId") Long clientId);
 }
