@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -17,15 +18,14 @@ import java.security.SecureRandom;
 
 public class AuthenticatorUtil {
 
-  public static ByteArrayOutputStream generateQRCode(String barCodeData) throws WriterException, IOException {
+  public static void generateQRCode(String barCodeData) throws WriterException, IOException {
     int width  = 115;
     int height = 115;
 
     BitMatrix matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height);
 
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+    try (FileOutputStream out = new FileOutputStream("qr.png")) {
       MatrixToImageWriter.writeToStream(matrix, "png", out);
-      return out;
     }
   }
 

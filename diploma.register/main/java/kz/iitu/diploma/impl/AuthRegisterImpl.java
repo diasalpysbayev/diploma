@@ -141,4 +141,33 @@ public class AuthRegisterImpl implements AuthRegister {
     var secretKey = clientDao.getSecretKeyId(id);
     return code.equals(getTOTPCode(secretKey));
   }
+
+  public static void main(String[] args) {
+//    var a = generateSecretKey();
+//    String secretKey   = a;
+//    System.out.println(a);
+//    String email       = "John";
+//    String companyName = "Diploma";
+//    String barCodeUrl  = getGoogleAuthenticatorBarCode(secretKey, email, companyName);
+//    try {
+//      //todo return as file
+//      generateQRCode(barCodeUrl);
+//
+//    } catch (WriterException | IOException e) {
+//      throw new RuntimeException("k6c0x0K9VZ :: ", e);
+//    }
+
+    String secretKey = "WSI3KBMBKBG7ZI2L6YQUAMAEXW3T3Z3E";
+    String lastCode = null;
+    while (true) {
+      String code = getTOTPCode(secretKey);
+      if (!code.equals(lastCode)) {
+        System.out.println(code);
+      }
+      lastCode = code;
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {};
+    }
+  }
 }

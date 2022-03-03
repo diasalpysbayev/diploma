@@ -50,4 +50,9 @@ public class AllConfigFactory extends FileConfigFactory {
   public SmsServiceConfig createSmsServiceConfig() {
     return createConfig(SmsServiceConfig.class);
   }
+
+  @Bean
+  public FileStorageConfig createFileStorageConfig() {
+    return createConfig(FileStorageConfig.class);
+  }
 }

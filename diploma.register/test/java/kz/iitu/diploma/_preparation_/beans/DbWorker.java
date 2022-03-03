@@ -3,7 +3,9 @@ package kz.iitu.diploma._preparation_.beans;
 import kz.greetgo.conf.hot.DefaultStrValue;
 import kz.greetgo.conf.hot.FirstReadEnv;
 import kz.greetgo.conf.sys_params.SysParams;
+import kz.iitu.diploma.bean.FileStorageConfiguration;
 import kz.iitu.diploma.config.DbConfig;
+import kz.iitu.diploma.config.FileStorageConfig;
 import kz.iitu.diploma.util.AppFolderPath;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
@@ -109,15 +111,15 @@ public class DbWorker {
 
     StringBuilder sb = new StringBuilder();
 
-//    sb.append("db.listElementCount=").append(FileStorageConfiguration.DB_COUNT).append("\n");
-//
-//    for (int i = 0; i < FileStorageConfiguration.DB_COUNT; i++) {
-//      sb.append("db.").append(i).append(".url=").append(dbUrl).append("\n");
-//      sb.append("db.").append(i).append(".username=").append(userName).append("\n");
-//      sb.append("db.").append(i).append(".password=").append(password).append("\n");
-//    }
+    sb.append("db.listElementCount=").append(FileStorageConfiguration.DB_COUNT).append("\n");
 
-//    out.println(sb.toString());
+    for (int i = 0; i < FileStorageConfiguration.DB_COUNT; i++) {
+      sb.append("db.").append(i).append(".url=").append(dbUrl).append("\n");
+      sb.append("db.").append(i).append(".username=").append(userName).append("\n");
+      sb.append("db.").append(i).append(".password=").append(password).append("\n");
+    }
+
+    out.println(sb);
 
     out.close();
 
@@ -163,11 +165,11 @@ public class DbWorker {
       }
     }
     {//FILE STORAGE
-//      File f = new File(AppFolderPath.confDir() + "/" + FileStorageConfig.class.getSimpleName() + ".hotconfig");
-//
-//      if (!f.exists()) {
-//        createFileStorageConfigFile(f);
-//      }
+      File f = new File(AppFolderPath.confDir() + "/" + FileStorageConfig.class.getSimpleName() + ".hotconfig");
+
+      if (!f.exists()) {
+        createFileStorageConfigFile(f);
+      }
 
     }
   }
@@ -185,7 +187,7 @@ public class DbWorker {
     return DriverManager.getConnection(
       SysParams.pgAdminUrl(),
       SysParams.pgAdminUserid(),
-      SysParams.pgAdminPassword());
+      "postgres");
   }
 
   public static String extractDbName(String url) {

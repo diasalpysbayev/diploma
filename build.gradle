@@ -67,6 +67,7 @@ subprojects {
         ext.slf4jVersion = "1.7.30"
         ext.swagger2Version = "3.0.0"
         ext.classScannerVersion = "2.0.4"
+        ext.fstorage = "2.0.0"
 
         implementation "org.projectlombok:lombok:$lombokVersion"
         annotationProcessor "org.projectlombok:lombok:$lombokVersion"
