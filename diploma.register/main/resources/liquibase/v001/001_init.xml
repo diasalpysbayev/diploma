@@ -56,4 +56,27 @@
       ]]></sql>
   </changeSet>
 
+  <changeSet author="dalpysbayev" id="003">
+    <sql endDelimiter=";;"><![CDATA[
+      create table if not exists query
+      (
+        id           bigint primary key,
+        client_id    bigint REFERENCES client (id),
+        valuestr     text,
+        created_at   timestamp default current_timestamp,
+        actual       boolean   default true
+        );
+
+      create table if not exists query_info
+      (
+        id           bigint primary key,
+        query_id     bigint REFERENCES query (id),
+        url          text,
+        title        text,
+        created_at   timestamp default current_timestamp,
+        actual       boolean   default true
+        );
+      ]]></sql>
+  </changeSet>
+
 </databaseChangeLog>
