@@ -94,8 +94,9 @@ subprojects {
 
     jar {
         manifest {
+            print(project.name)
             attributes 'Implementation-Title': project.name
-            attributes 'Implementation-Vendor': "greetgo!"
+            attributes 'Implementation-Vendor': "iitu"
             attributes 'Created-By': System.getProperty("user.name")
             attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
         }
@@ -103,8 +104,11 @@ subprojects {
 }
 
 bootJar {
-    enabled false
+    manifest {
+        attributes 'Start-Class': 'kz.iitu.diploma.DiplomaApplication'
+    }
 }
 
 dependencies {
+    implementation project(":diploma.register")
 }
