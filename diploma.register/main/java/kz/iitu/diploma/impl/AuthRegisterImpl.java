@@ -86,6 +86,7 @@ public class AuthRegisterImpl implements AuthRegister {
     registerRecord.id       = clientDao.nextClientId();
     registerRecord.password = passwordEncoder.encode(registerRecord.password);
     authDao.createClient(registerRecord);
+    //todo save smsCode in terms of use and add система штрафов
     authDao.setSecretKeyId(generateSecretKey(), registerRecord.id);
 
     SessionInfo session = createSession(registerRecord.id);

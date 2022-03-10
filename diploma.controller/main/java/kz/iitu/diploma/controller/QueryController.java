@@ -15,9 +15,9 @@ public class QueryController {
   @Autowired
   private QueryRegister queryRegister;
 
-  @PostMapping("/query")
+  @PostMapping("/execute-query")
   public void checkPhoneOnExist(@RequestBody QueryRecord queryRecord) {
-    queryRegister.createQuery(queryRecord);
+    queryRegister.executeQuery(queryRecord);
   }
 
 }
