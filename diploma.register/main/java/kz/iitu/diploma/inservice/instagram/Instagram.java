@@ -20,7 +20,7 @@ public class Instagram {
     InstagramSearchLocationsResult locationsResult = new InstagramSearchLocationsResult();
     InstagramSearchUsernameResult  usernameResult  = insta.sendRequest(new InstagramSearchUsernameRequest("whataboutemil"));
 
-    InstagramSearchTagsResult tagsResult = insta.sendRequest(new InstagramSearchTagsRequest("almaty"));
+    InstagramSearchTagsResult tagsResult = insta.sendRequest(new InstagramSearchTagsRequest("almaty")); // media_count - количество публикаций под тегом
     tagsResult.getResults();
     usernameResult.getUser();
 

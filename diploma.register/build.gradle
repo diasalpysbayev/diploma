@@ -60,6 +60,8 @@ dependencies {
     implementation group: 'com.google.zxing', name: 'javase', version: '3.3.0'
     implementation "kz.greetgo:greetgo.fstorage:$fstorage"
 
+    implementation group: 'com.clearbit', name: 'client', version: '0.9'
+
 }
 
 bootJar {
