@@ -1,7 +1,9 @@
 package kz.iitu.diploma.inservice.search_engine.yandex.impl;
 
+import com.google.gson.Gson;
 import kz.iitu.diploma.config.YandexApiConfig;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
+import kz.iitu.diploma.model.search_engine.GoogleResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class YandexSearchServiceReal implements YandexSearchService {
 
@@ -24,24 +27,23 @@ public class YandexSearchServiceReal implements YandexSearchService {
 
   @SneakyThrows
   @Override
-  public List<String> search(String query) {
+  public GoogleResult search(String query) {
+    GoogleResult googleResult = new GoogleResult();
+
     HttpClient httpClient = HttpClientBuilder.create().build();
 
     List<String> responseList = new ArrayList<>();
     List<String> list         = List.of(query.split(","));
 
-    String gl    = "&gl=kz";
-    String safe  = "&safe=off";
-    String asQdr = "&as_qdr=d10"; // last 10 days
+    String kz    = "&yandex_domain=yandex.kz";
 
-    StringBuilder q = new StringBuilder("&text=");
+    StringBuilder q = new StringBuilder("&text="); // lr - location
     list.forEach(str -> {
-      String asEpq = "&as_epq=" + str; // обязательно быть в поиске
       q.append(str).append("+OR+");
     });
 
     q.delete(q.length() - 4, q.length());
-    q.append(gl).append(safe);
+    q.append(kz);
 
     String  api     = this.yandexApiConfig.url() + q + "&api_key=" + this.yandexApiConfig.api();
     HttpGet request = new HttpGet(api);
@@ -58,11 +60,15 @@ public class YandexSearchServiceReal implements YandexSearchService {
         result.append(line);
       }
 
-      responseList.add(result.toString());
+      Gson gson = new Gson();
+
+      Map map = gson.fromJson(result.toString(), Map.class);
+
+      googleResult.list.add(map);
     } catch (IOException e) {
       throw new RuntimeException();
     }
 
-    return responseList;
+    return googleResult;
   }
 }

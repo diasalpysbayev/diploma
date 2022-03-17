@@ -60,7 +60,7 @@ public class QueryRegisterImpl implements QueryRegister {
   @Override
   public void executeQuery(QueryRecord queryRecord) {
 
-    int partitionSize = 3;
+    int partitionSize = (queryRecord.queryList.size() + 3 - 1) / 3;
 
     List<List<String>> dividedQuery = new LinkedList<>();
     for (int i = 0; i < queryRecord.queryList.size(); i += partitionSize) {
@@ -71,14 +71,14 @@ public class QueryRegisterImpl implements QueryRegister {
     int i = -1;
 
     GoogleResult googleResult     = new GoogleResult();
-    List<String> yandexResult     = new ArrayList<>();
+    GoogleResult yandexResult     = new GoogleResult();
     List<String> duckDuckGoResult = new ArrayList<>();
 
     for (List<String> queryList : dividedQuery) {
       i++;
       for (String query : queryList) {
         if (i == 0) {
-          googleResult = googleSearchService.search(query);
+          //          googleResult = googleSearchService.search(query);
         } else if (i == 1) {
           yandexResult = yandexSearchService.search(query);
         } else {
@@ -89,9 +89,10 @@ public class QueryRegisterImpl implements QueryRegister {
 
     StringBuilder builder = new StringBuilder();
     googleResult.list.forEach(map -> {
+      builder.append("google:");
       for (Object key : map.keySet()) {
         if (key.equals("search_metadata")) {
-          if (!new JSONObject((Map)map.get(key)).get("status").equals("Success")) {
+          if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
             continue;
           }
         }
@@ -120,6 +121,23 @@ public class QueryRegisterImpl implements QueryRegister {
         if (key.equals("related_searches")) {
           for (Object o : (List) map.get(key)) {
             builder.append("query=").append(new JSONObject((Map) o).get("query")).append(";");
+            builder.append("link=").append(new JSONObject((Map) o).get("link")).append(";");
+          }
+        }
+      }
+    });
+
+    yandexResult.list.forEach(map -> {
+      for (Object key : map.keySet()) {
+        if (key.equals("search_metadata")) {
+          if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
+            continue;
+          }
+        }
+
+        if (key.equals("organic_results")) {
+          for (Object o : (List) map.get(key)) {
+            builder.append("title=").append(new JSONObject((Map) o).get("title")).append(";");
             builder.append("link=").append(new JSONObject((Map) o).get("link")).append(";");
           }
         }

@@ -1,9 +1,9 @@
 package kz.iitu.diploma.inservice.search_engine.yandex;
 
-import java.util.List;
+import kz.iitu.diploma.model.search_engine.GoogleResult;
 
 public interface YandexSearchService {
 
-  List<String> search(String query);
+  GoogleResult search(String query);
 
 }
