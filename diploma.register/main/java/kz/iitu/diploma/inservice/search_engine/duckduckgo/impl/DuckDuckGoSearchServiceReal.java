@@ -1,9 +1,11 @@
 package kz.iitu.diploma.inservice.search_engine.duckduckgo.impl;
 
+import com.google.gson.Gson;
 import kz.iitu.diploma.config.DuckDuckGoApiConfig;
 import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
 import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
+import kz.iitu.diploma.model.search_engine.GoogleResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
 
@@ -26,24 +29,18 @@ public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
 
   @SneakyThrows
   @Override
-  public List<String> search(String query) {
+  public GoogleResult search(String oldQuery) {
+    GoogleResult ddg = new GoogleResult();
+
     HttpClient httpClient = HttpClientBuilder.create().build();
+    var query = oldQuery.replace(" ", "+");
 
-    List<String> list         = List.of(query.split(","));
-    List<String> responseList = new ArrayList<>();
+//    String kl  = "&kl=fr-fr"; // region
+    String safe  = "&safe=-2";
 
-    String gl    = "&gl=kz";
-    String safe  = "&safe=off";
-    String asQdr = "&as_qdr=d10"; // last 10 days
+    StringBuilder q = new StringBuilder("&q=" + query);
 
-    StringBuilder q = new StringBuilder("&q=");
-    list.forEach(str -> {
-      String asEpq = "&as_epq=" + str; // обязательно быть в поиске
-      q.append(str).append("+OR+");
-    });
-
-    q.delete(q.length() - 4, q.length());
-    q.append(gl).append(safe);
+    q.append(safe);
 
     String  api     = this.duckDuckGoApiConfig.url() + q + "&api_key=" + this.duckDuckGoApiConfig.api();
     HttpGet request = new HttpGet(api);
@@ -60,13 +57,16 @@ public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
         result.append(line);
       }
 
-      responseList.add(result.toString());
+      Gson gson = new Gson();
+
+      Map map = gson.fromJson(result.toString(), Map.class);
+
+      ddg.list.add(map);
     } catch (IOException e) {
       throw new RuntimeException();
     }
 
-
-    return responseList;
+    return ddg;
 
   }
 

@@ -29,9 +29,9 @@ public class DiplomaApplicationTests extends AbstractTestParent{
     public void test() {
         QueryRecord queryRecord = new QueryRecord();
         queryRecord.queryList = new ArrayList<>();
-        queryRecord.queryList.add("Наркотики");
-        queryRecord.queryList.add("Сон");
-        queryRecord.queryList.add("Сигареты");
+        queryRecord.queryList.add("Алкоголь вредный ли");
+        queryRecord.queryList.add("Здоровый сон");
+        queryRecord.queryList.add("Сигареты вред");
 
         //
         //

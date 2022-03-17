@@ -27,23 +27,17 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
 
   @SneakyThrows
   @Override
-  public GoogleResult search(String query) {
+  public GoogleResult search(String oldQuery) {
     HttpClient httpClient = HttpClientBuilder.create().build();
 
-    List<String> list         = List.of(query.split(","));
+    var query = oldQuery.replace(" ", "+");
     GoogleResult googleResult = new GoogleResult();
 
     String gl    = "&gl=kz";
     String safe  = "&safe=off";
     String asQdr = "&as_qdr=d10"; // last 10 days
 
-    StringBuilder q = new StringBuilder("&q=");
-    list.forEach(str -> {
-      String asEpq = "&as_epq=" + str; // обязательно быть в поиске
-      q.append(str).append("+OR+");
-    });
-
-    q.delete(q.length() - 4, q.length());
+    StringBuilder q = new StringBuilder("&q=" + query);
     q.append(gl).append(safe);
 
     String  api     = this.googleApiConfig.url() + q + "&api_key=" + this.googleApiConfig.api();

@@ -72,13 +72,13 @@ public class QueryRegisterImpl implements QueryRegister {
 
     GoogleResult googleResult     = new GoogleResult();
     GoogleResult yandexResult     = new GoogleResult();
-    List<String> duckDuckGoResult = new ArrayList<>();
+    GoogleResult duckDuckGoResult = new GoogleResult();
 
     for (List<String> queryList : dividedQuery) {
       i++;
       for (String query : queryList) {
         if (i == 0) {
-          //          googleResult = googleSearchService.search(query);
+                    googleResult = googleSearchService.search(query);
         } else if (i == 1) {
           yandexResult = yandexSearchService.search(query);
         } else {
@@ -89,7 +89,8 @@ public class QueryRegisterImpl implements QueryRegister {
 
     StringBuilder builder = new StringBuilder();
     googleResult.list.forEach(map -> {
-      builder.append("google:");
+      builder.append("GOOGLESEARCH:");
+
       for (Object key : map.keySet()) {
         if (key.equals("search_metadata")) {
           if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
@@ -128,6 +129,27 @@ public class QueryRegisterImpl implements QueryRegister {
     });
 
     yandexResult.list.forEach(map -> {
+      builder.append("YANDEXSEARCH:");
+
+      for (Object key : map.keySet()) {
+        if (key.equals("search_metadata")) {
+          if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
+            continue;
+          }
+        }
+
+        if (key.equals("organic_results")) {
+          for (Object o : (List) map.get(key)) {
+            builder.append("title=").append(new JSONObject((Map) o).get("title")).append(";");
+            builder.append("link=").append(new JSONObject((Map) o).get("link")).append(";");
+          }
+        }
+      }
+    });
+
+    duckDuckGoResult.list.forEach(map -> {
+      builder.append("DUCKDUCKGOSEARCH:");
+
       for (Object key : map.keySet()) {
         if (key.equals("search_metadata")) {
           if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {

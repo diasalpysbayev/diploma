@@ -27,22 +27,15 @@ public class YandexSearchServiceReal implements YandexSearchService {
 
   @SneakyThrows
   @Override
-  public GoogleResult search(String query) {
+  public GoogleResult search(String oldQuery) {
     GoogleResult googleResult = new GoogleResult();
 
     HttpClient httpClient = HttpClientBuilder.create().build();
-
-    List<String> responseList = new ArrayList<>();
-    List<String> list         = List.of(query.split(","));
+    var query = oldQuery.replace(" ", "+");
 
     String kz    = "&yandex_domain=yandex.kz";
 
-    StringBuilder q = new StringBuilder("&text="); // lr - location
-    list.forEach(str -> {
-      q.append(str).append("+OR+");
-    });
-
-    q.delete(q.length() - 4, q.length());
+    StringBuilder q = new StringBuilder("&text=" + query); // lr - location
     q.append(kz);
 
     String  api     = this.yandexApiConfig.url() + q + "&api_key=" + this.yandexApiConfig.api();
