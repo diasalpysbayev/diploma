@@ -3,7 +3,7 @@ package kz.iitu.diploma.inservice.search_engine.google.impl;
 import com.google.gson.Gson;
 import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
-import kz.iitu.diploma.model.search_engine.GoogleResult;
+import kz.iitu.diploma.model.search_engine.QueryResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,7 +13,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Map;
 
 public class GoogleSearchServiceReal implements GoogleSearchService {
@@ -27,11 +26,11 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
 
   @SneakyThrows
   @Override
-  public GoogleResult search(String oldQuery) {
+  public QueryResult search(String oldQuery) {
     HttpClient httpClient = HttpClientBuilder.create().build();
 
-    var query = oldQuery.replace(" ", "+");
-    GoogleResult googleResult = new GoogleResult();
+    var         query        = oldQuery.replace(" ", "+");
+    QueryResult googleResult = new QueryResult();
 
     String gl    = "&gl=kz";
     String safe  = "&safe=off";

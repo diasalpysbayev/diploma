@@ -3,7 +3,6 @@ package kz.iitu.diploma.impl;
 import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceReal;
 import kz.iitu.diploma.model.query.QueryRecord;
-import kz.iitu.diploma.model.search_engine.GoogleResult;
 import kz.iitu.diploma.register.QueryRegister;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

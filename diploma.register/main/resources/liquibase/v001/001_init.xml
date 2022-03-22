@@ -79,4 +79,11 @@
       ]]></sql>
   </changeSet>
 
+  <changeSet author="dalpysbayev" id="004">
+    <sql endDelimiter=";;"><![CDATA[
+      CREATE SEQUENCE IF NOT EXISTS query_id_seq;
+      CREATE SEQUENCE IF NOT EXISTS query_info_id_seq;
+      ]]></sql>
+  </changeSet>
+
 </databaseChangeLog>

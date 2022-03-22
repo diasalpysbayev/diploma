@@ -3,7 +3,7 @@ package kz.iitu.diploma.inservice.search_engine.yandex.impl;
 import com.google.gson.Gson;
 import kz.iitu.diploma.config.YandexApiConfig;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
-import kz.iitu.diploma.model.search_engine.GoogleResult;
+import kz.iitu.diploma.model.search_engine.QueryResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,8 +13,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class YandexSearchServiceReal implements YandexSearchService {
@@ -27,8 +25,8 @@ public class YandexSearchServiceReal implements YandexSearchService {
 
   @SneakyThrows
   @Override
-  public GoogleResult search(String oldQuery) {
-    GoogleResult googleResult = new GoogleResult();
+  public QueryResult search(String oldQuery) {
+    QueryResult googleResult = new QueryResult();
 
     HttpClient httpClient = HttpClientBuilder.create().build();
     var query = oldQuery.replace(" ", "+");

@@ -1,9 +1,9 @@
 package kz.iitu.diploma.inservice.search_engine.google;
 
-import kz.iitu.diploma.model.search_engine.GoogleResult;
+import kz.iitu.diploma.model.search_engine.QueryResult;
 
 public interface GoogleSearchService {
 
-  GoogleResult search(String query);
+  QueryResult search(String query);
 
 }

@@ -2,10 +2,8 @@ package kz.iitu.diploma.inservice.search_engine.duckduckgo.impl;
 
 import com.google.gson.Gson;
 import kz.iitu.diploma.config.DuckDuckGoApiConfig;
-import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
-import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
-import kz.iitu.diploma.model.search_engine.GoogleResult;
+import kz.iitu.diploma.model.search_engine.QueryResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,8 +13,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
@@ -29,8 +25,8 @@ public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
 
   @SneakyThrows
   @Override
-  public GoogleResult search(String oldQuery) {
-    GoogleResult ddg = new GoogleResult();
+  public QueryResult search(String oldQuery) {
+    QueryResult ddg = new QueryResult();
 
     HttpClient httpClient = HttpClientBuilder.create().build();
     var query = oldQuery.replace(" ", "+");
