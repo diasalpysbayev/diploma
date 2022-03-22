@@ -1,10 +1,11 @@
 package kz.iitu.diploma.model.search_engine;
 
+import lombok.Builder;
+
+@Builder
 public class SearchInformation {
 
-  public String organicResultsState;
-  public String queryDisplayed;
-  public Long   totalResults;
-  public Double timeTakenDisplayed;
+  public String url;
+  public String title;
 
 }

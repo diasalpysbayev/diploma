@@ -1,9 +1,12 @@
 package kz.iitu.diploma.register;
 
 import kz.iitu.diploma.model.query.QueryRecord;
+import kz.iitu.diploma.model.search_engine.SearchInformation;
+
+import java.util.List;
 
 public interface QueryRegister {
 
-  void executeQuery(QueryRecord queryRecord);
+  List<SearchInformation> executeQuery(QueryRecord queryRecord);
 
 }

@@ -7,6 +7,7 @@ import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.QueryResult;
+import kz.iitu.diploma.model.search_engine.SearchInformation;
 import kz.iitu.diploma.register.QueryRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class QueryRegisterImpl implements QueryRegister {
   private SessionRegister         sessionRegister;
 
   @Override
-  public void executeQuery(QueryRecord queryRecord) {
+  public List<SearchInformation> executeQuery(QueryRecord queryRecord) {
     var dividedQuery = divideQuery(queryRecord);
 
     int i = -1;
@@ -56,11 +57,20 @@ public class QueryRegisterImpl implements QueryRegister {
       }
     }
 
-    String valuestr = parseResult(googleResult, "google") +
-        parseResult(yandexResult, "yandex") +
-        parseResult(duckDuckGoResult, "duckduckgo");
+    List<SearchInformation> searchInformationList = new LinkedList<>();
+    searchInformationList.addAll(parseResult(googleResult, "google"));
+    searchInformationList.addAll(parseResult(yandexResult, "yandex"));
+    searchInformationList.addAll(parseResult(duckDuckGoResult, "duckduckgo"));
 
-    queryDao.saveQuery(queryDao.nextQueryId(), sessionRegister.getPrincipal(), valuestr);
+    var queryId = queryDao.nextQueryId();
+    queryDao.saveQuery(queryId, sessionRegister.getPrincipal(), queryRecord.queryList.toString());
+
+    searchInformationList.forEach(searchInformation -> {
+      var queryInfoId = queryDao.nextQueryInfoId();
+      queryDao.saveQueryInfo(queryInfoId, queryId, searchInformation.title, searchInformation.url);
+    });
+
+    return searchInformationList;
   }
 
   private List<List<String>> divideQuery(QueryRecord queryRecord) {
@@ -75,15 +85,13 @@ public class QueryRegisterImpl implements QueryRegister {
     return dividedQuery;
   }
 
-  private String parseResult(QueryResult queryResult, String name) {
-    StringBuilder builder    = new StringBuilder();
-    List<String>  duplicates = new ArrayList<>();
+  private List<SearchInformation> parseResult(QueryResult queryResult, String name) {
+    List<SearchInformation> searchInformationList = new LinkedList<>();
+    List<String>            duplicates            = new ArrayList<>();
 
     switch (name) {
       case "google":
         queryResult.list.forEach(map -> {
-          builder.append("GOOGLESEARCH:");
-
           for (Object key : map.keySet()) {
             if (key.equals("search_metadata")) {
               if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
@@ -94,8 +102,10 @@ public class QueryRegisterImpl implements QueryRegister {
             if (key.equals("top_stories")) {
               for (Object o : (List) map.get(key)) {
                 if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(getTitle(o)).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
                   duplicates.add(getLink(o));
                 }
               }
@@ -104,9 +114,11 @@ public class QueryRegisterImpl implements QueryRegister {
             if (key.equals("related_questions")) {
               for (Object o : (List) map.get(key)) {
                 if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(getTitle(o)).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
                   duplicates.add(getLink(o));
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
                 }
               }
             }
@@ -114,9 +126,11 @@ public class QueryRegisterImpl implements QueryRegister {
             if (key.equals("organic_results")) {
               for (Object o : (List) map.get(key)) {
                 if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(getTitle(o)).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
                   duplicates.add(getLink(o));
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
                 }
               }
             }
@@ -124,8 +138,10 @@ public class QueryRegisterImpl implements QueryRegister {
             if (key.equals("related_searches")) {
               for (Object o : (List) map.get(key)) {
                 if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(new JSONObject((Map) o).get("query")).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(new JSONObject((Map) o).get("query").toString())
+                      .url(getLink(o))
+                      .build());
                   duplicates.add(getLink(o));
                 }
               }
@@ -134,32 +150,8 @@ public class QueryRegisterImpl implements QueryRegister {
         });
         break;
       case "yandex":
-        queryResult.list.forEach(map -> {
-          builder.append("YANDEXSEARCH:");
-
-          for (Object key : map.keySet()) {
-            if (key.equals("search_metadata")) {
-              if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
-                continue;
-              }
-            }
-
-            if (key.equals("organic_results")) {
-              for (Object o : (List) map.get(key)) {
-                if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(getTitle(o)).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
-                  duplicates.add(getLink(o));
-                }
-              }
-            }
-          }
-        });
-        break;
       case "duckduckgo":
         queryResult.list.forEach(map -> {
-          builder.append("DUCKDUCKGOSEARCH:");
-
           for (Object key : map.keySet()) {
             if (key.equals("search_metadata")) {
               if (!new JSONObject((Map) map.get(key)).get("status").equals("Success")) {
@@ -170,8 +162,10 @@ public class QueryRegisterImpl implements QueryRegister {
             if (key.equals("organic_results")) {
               for (Object o : (List) map.get(key)) {
                 if (!duplicates.contains(getLink(o))) {
-                  builder.append("title=").append(getTitle(o)).append(";");
-                  builder.append("link=").append(getLink(o)).append(";");
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
                   duplicates.add(getLink(o));
                 }
               }
@@ -181,7 +175,7 @@ public class QueryRegisterImpl implements QueryRegister {
         break;
     }
 
-    return builder.toString();
+    return searchInformationList;
   }
 
   private String getLink(Object o) {
