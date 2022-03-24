@@ -46,6 +46,11 @@ public class AuthController {
     return ResponseEntity.ok(authRegister.login(loginRequest));
   }
 
+  @GetMapping("/get-qr")
+  public String getQrCode() {
+    return authRegister.createQRCode();
+  }
+
   @GetMapping("/check-totp")
   public boolean totp(@RequestParam("code") String code) {
     return authRegister.checkTotp(code);

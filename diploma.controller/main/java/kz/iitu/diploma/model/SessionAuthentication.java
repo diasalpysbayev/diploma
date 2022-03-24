@@ -1,6 +1,5 @@
 package kz.iitu.diploma.model;
 
-import kz.iitu.diploma.model.auth.AuthDetail;
 import kz.iitu.diploma.model.auth.SessionInfo;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

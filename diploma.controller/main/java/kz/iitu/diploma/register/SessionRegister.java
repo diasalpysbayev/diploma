@@ -1,9 +1,9 @@
 package kz.iitu.diploma.register;
 
-import kz.iitu.diploma.model.auth.AuthDetail;
+import kz.iitu.diploma.model.auth.SessionInfo;
 
 public interface SessionRegister {
   Long getPrincipal();
 
-  AuthDetail getAuthDetails();
+  SessionInfo getAuthDetails();
 }

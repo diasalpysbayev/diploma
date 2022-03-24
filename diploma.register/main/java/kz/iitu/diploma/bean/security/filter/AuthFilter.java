@@ -1,7 +1,6 @@
 package kz.iitu.diploma.bean.security.filter;
 
 import com.google.common.base.Strings;
-import kz.iitu.diploma.model.auth.AuthDetail;
 import kz.iitu.diploma.model.auth.SessionInfo;
 import kz.iitu.diploma.register.AuthRegister;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +18,8 @@ import static kz.iitu.diploma.util.ContextUtil.setContext;
 @RequiredArgsConstructor
 public class AuthFilter implements Filter {
 
-  private final AuthRegister authRegister;
-
   public static final String GG_TOKEN = "tokenId";//All our projects, using gg_token
+  private final AuthRegister authRegister;
 
   @Override
   @SneakyThrows

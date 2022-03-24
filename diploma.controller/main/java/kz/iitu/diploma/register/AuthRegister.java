@@ -16,7 +16,7 @@ public interface AuthRegister {
 
   SessionInfo getAuthDetailsByToken(String ggToken);
 
-  void createQRCode();
+  String createQRCode();
 
   boolean checkTotp(String code);
 

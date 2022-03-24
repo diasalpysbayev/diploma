@@ -1,6 +1,5 @@
 package kz.iitu.diploma.dao;
 
-import kz.iitu.diploma.model.auth.AuthDetail;
 import kz.iitu.diploma.model.auth.ClientRegisterRecord;
 import kz.iitu.diploma.model.auth.SessionInfo;
 import kz.iitu.diploma.model.auth.SmsRecord;
@@ -26,8 +25,11 @@ public interface AuthDao {
       "from x;")
   boolean checkCode(SmsRecord smsRecord);
 
-  @Select("select id, phone_number from client where phone_number=#{phoneNumber} and password=#{password} and actual=true")
-  AuthDetail getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
+  @Select("select c.id as id, phone_number as phoneNumber, name, surname " +
+      "from client c" +
+      "left join client c on ct.client_id = c.id and c.actual = true " +
+      "where phone_number=#{phoneNumber} and password=#{password} and actual=true")
+  SessionInfo getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
 
   @Select("select id, name, surname from client where id=#{id} and actual=true")
   SessionInfo getClientById(@Param("id") Long id);
@@ -43,8 +45,10 @@ public interface AuthDao {
       "values(#{id}, #{phoneNumber}, #{password})")
   void createClient(ClientRegisterRecord registerRecord);
 
-  @Select("select token_id as id from client_token_storage where token_id = #{token_id} and actual = true")
-  SessionInfo getAuthDetailsByToken(@Param("ggToken") String ggToken);
+  @Select("select c.id as id, name, surname, phone_number as phone from client_token_storage ct  \n" +
+      "    left join client c on ct.client_id = c.id and c.actual = true \n" +
+      "    where ct.id = #{tokenId} and ct.actual = true ")
+  SessionInfo getAuthDetailsByToken(@Param("tokenId") String tokenId);
 
   @Select("select exists(select 1 from client where phone_number = #{phoneNumber});")
   boolean checkPhone(String phoneNumber);

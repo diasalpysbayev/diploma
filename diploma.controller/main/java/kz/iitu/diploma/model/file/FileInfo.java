@@ -2,8 +2,10 @@ package kz.iitu.diploma.model.file;
 
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class FileInfo {
 
   public String fileId;

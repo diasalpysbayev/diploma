@@ -19,6 +19,10 @@ public class ClientRegisterRecord {
 
   public String smsCode;
 
+  public String firstName;
+
+  public String lastName;
+
   @NotBlank(message = "Пароль не может быть пустым")
   public String password;
 
@@ -36,11 +40,14 @@ public class ClientRegisterRecord {
       record = new ClientRegisterRecord();
     }
 
-    public ClientRegisterRecord.ClientRegisterRecordBuilder parameters(Long id, String phoneNumber, String password, String confirmPassword) {
+    public ClientRegisterRecord.ClientRegisterRecordBuilder parameters(Long id, String phoneNumber, String password,
+                                                                       String confirmPassword, String firstName, String lastName) {
       this.record.id = id;
       this.record.phoneNumber = phoneNumber;
       this.record.password = password;
       this.record.confirmPassword = confirmPassword;
+      this.record.firstName = firstName;
+      this.record.lastName = lastName;
       return this;
     }
 
