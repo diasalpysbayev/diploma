@@ -1,8 +1,8 @@
-package kz.iitu.diploma.inservice.search_engine.duckduckgo.impl;
+package kz.iitu.diploma.inservice.search_engine.bing.impl;
 
 import com.google.gson.Gson;
-import kz.iitu.diploma.config.DuckDuckGoApiConfig;
-import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
+import kz.iitu.diploma.config.BingApiConfig;
+import kz.iitu.diploma.inservice.search_engine.bing.BingSearchService;
 import kz.iitu.diploma.model.search_engine.QueryResult;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
@@ -15,31 +15,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
+public class BingSearchServiceReal implements BingSearchService {
 
-  private final DuckDuckGoApiConfig duckDuckGoApiConfig;
+  private final BingApiConfig bingApiConfig;
 
-  public DuckDuckGoSearchServiceReal(DuckDuckGoApiConfig duckDuckGoApiConfig) {
-    this.duckDuckGoApiConfig = duckDuckGoApiConfig;
+
+  public BingSearchServiceReal(BingApiConfig bingApiConfig) {
+    this.bingApiConfig = bingApiConfig;
   }
 
   @SneakyThrows
   @Override
   public QueryResult search(String oldQuery) {
-    QueryResult ddg = new QueryResult();
-
     HttpClient httpClient = HttpClientBuilder.create().build();
-    var query = oldQuery.replace(" ", "+");
 
-//    String kl  = "&kl=google.kz"; // region
-    String safe  = "&safe=-2";
+    var         query        = oldQuery.replace(" ", "+");
+    QueryResult googleResult = new QueryResult();
 
     StringBuilder q = new StringBuilder("&q=" + query);
 
-//    q.append(kl);
-    q.append(safe);
-
-    String  api     = this.duckDuckGoApiConfig.url() + q + "&api_key=" + this.duckDuckGoApiConfig.api();
+    String  api     = this.bingApiConfig.url() + q + "&api_key=" + this.bingApiConfig.api();
     HttpGet request = new HttpGet(api);
 
     request.addHeader("Accept-Language", "ru");
@@ -53,17 +48,16 @@ public class DuckDuckGoSearchServiceReal implements DuckDuckGoSearchService {
       while ((line = rd.readLine()) != null) {
         result.append(line);
       }
-
       Gson gson = new Gson();
 
       Map map = gson.fromJson(result.toString(), Map.class);
 
-      ddg.list.add(map);
+      googleResult.list.add(map);
     } catch (IOException e) {
       throw new RuntimeException();
     }
 
-    return ddg;
+    return googleResult;
 
   }
 

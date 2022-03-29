@@ -4,6 +4,9 @@ import kz.iitu.diploma.config.*;
 import kz.iitu.diploma.inservice.instagram.InstagramService;
 import kz.iitu.diploma.inservice.instagram.impl.InstagramServiceFake;
 import kz.iitu.diploma.inservice.instagram.impl.InstagramServiceReal;
+import kz.iitu.diploma.inservice.search_engine.bing.BingSearchService;
+import kz.iitu.diploma.inservice.search_engine.bing.impl.BingSearchServiceFake;
+import kz.iitu.diploma.inservice.search_engine.bing.impl.BingSearchServiceReal;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.impl.DuckDuckGoSearchServiceFake;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.impl.DuckDuckGoSearchServiceReal;
@@ -30,6 +33,7 @@ public class ServiceFactory {
   private final DuckDuckGoApiConfig duckDuckGoApiConfig;
   private final InstagramConfig     instagramConfig;
   private final SmsServiceConfig    smsServiceConfig;
+  private final BingApiConfig       bingApiConfig;
   private final RestTemplate        restTemplate;
 
   @Bean
@@ -70,5 +74,14 @@ public class ServiceFactory {
     serviceReal.setRestTemplate(restTemplate);
 
     return serviceReal;
+  }
+
+  @Bean
+  public BingSearchService bingSearchService() {
+    if (bingApiConfig.useFake()) {
+      return new BingSearchServiceFake();
+    }
+
+    return new BingSearchServiceReal(bingApiConfig);
   }
 }

@@ -2,6 +2,7 @@ package kz.iitu.diploma.impl;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import kz.iitu.diploma.dao.QueryDao;
+import kz.iitu.diploma.inservice.search_engine.bing.BingSearchService;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
 import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
@@ -30,6 +31,8 @@ public class QueryRegisterImpl implements QueryRegister {
   @Autowired
   private DuckDuckGoSearchService duckDuckGoSearchService;
   @Autowired
+  private BingSearchService       bingSearchService;
+  @Autowired
   private QueryDao                queryDao;
   @Autowired
   private SessionRegister         sessionRegister;
@@ -43,6 +46,7 @@ public class QueryRegisterImpl implements QueryRegister {
     QueryResult googleResult     = new QueryResult();
     QueryResult yandexResult     = new QueryResult();
     QueryResult duckDuckGoResult = new QueryResult();
+    QueryResult bingResult       = new QueryResult();
 
     for (List<String> queryList : dividedQuery) {
       i++;
@@ -51,8 +55,10 @@ public class QueryRegisterImpl implements QueryRegister {
           googleResult = googleSearchService.search(query);
         } else if (i == 1) {
           yandexResult = yandexSearchService.search(query);
-        } else {
+        } else if (i == 2){
           duckDuckGoResult = duckDuckGoSearchService.search(query);
+        } else {
+          bingResult = bingSearchService.search(query);
         }
       }
     }
@@ -61,6 +67,7 @@ public class QueryRegisterImpl implements QueryRegister {
     searchInformationList.addAll(parseResult(googleResult, "google"));
     searchInformationList.addAll(parseResult(yandexResult, "yandex"));
     searchInformationList.addAll(parseResult(duckDuckGoResult, "duckduckgo"));
+    searchInformationList.addAll(parseResult(bingResult, "bing"));
 
     var queryId = queryDao.nextQueryId();
     queryDao.saveQuery(queryId, sessionRegister.getPrincipal(), queryRecord.queryList.toString());
@@ -151,6 +158,7 @@ public class QueryRegisterImpl implements QueryRegister {
         break;
       case "yandex":
       case "duckduckgo":
+      case "bing":
         queryResult.list.forEach(map -> {
           for (Object key : map.keySet()) {
             if (key.equals("search_metadata")) {

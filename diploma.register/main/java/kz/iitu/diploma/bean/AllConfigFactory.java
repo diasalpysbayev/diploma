@@ -55,4 +55,10 @@ public class AllConfigFactory extends FileConfigFactory {
   public FileStorageConfig createFileStorageConfig() {
     return createConfig(FileStorageConfig.class);
   }
+
+  @Bean
+  public BingApiConfig createBingConfig() {
+    return createConfig(BingApiConfig.class);
+  }
+
 }

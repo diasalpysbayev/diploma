@@ -21,7 +21,7 @@ public interface QueryDao {
                  @Param(value = "clientId") Long clientId,
                  @Param(value = "valuestr") String valuestr);
 
-  @Insert("insert into query_info(id, query_id, url, title) values (#{id}, #{queryId}, #{title}, #{url})")
+  @Insert("insert into query_info(id, query_id, title, url) values (#{id}, #{queryId}, #{title}, #{url})")
   void saveQueryInfo(@Param(value = "id") Long id,
                  @Param(value = "queryId") Long queryId,
                  @Param(value = "title") String title,
