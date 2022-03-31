@@ -61,4 +61,9 @@ public class AllConfigFactory extends FileConfigFactory {
     return createConfig(BingApiConfig.class);
   }
 
+  @Bean
+  public YouTubeApiConfig createYouTubeConfig() {
+    return createConfig(YouTubeApiConfig.class);
+  }
+
 }

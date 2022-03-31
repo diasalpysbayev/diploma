@@ -4,7 +4,7 @@ import java.util.List;
 
 public class QueryRecord {
 
-  public List<String> queryList;
+  public List<QueryDetail> queryList;
   public List<String> locationList;
 
 }

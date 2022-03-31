@@ -16,6 +16,9 @@ import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceRe
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceFake;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceReal;
+import kz.iitu.diploma.inservice.search_engine.youtube.YouTubeService;
+import kz.iitu.diploma.inservice.search_engine.youtube.impl.YouTubeServiceFake;
+import kz.iitu.diploma.inservice.search_engine.youtube.impl.YouTubeServiceReal;
 import kz.iitu.diploma.inservice.sms.SmsService;
 import kz.iitu.diploma.inservice.sms.fake.SmsServiceFake;
 import kz.iitu.diploma.inservice.sms.real.SmsServiceReal;
@@ -34,6 +37,7 @@ public class ServiceFactory {
   private final InstagramConfig     instagramConfig;
   private final SmsServiceConfig    smsServiceConfig;
   private final BingApiConfig       bingApiConfig;
+  private final YouTubeApiConfig    youTubeApiConfig;
   private final RestTemplate        restTemplate;
 
   @Bean
@@ -83,5 +87,14 @@ public class ServiceFactory {
     }
 
     return new BingSearchServiceReal(bingApiConfig);
+  }
+
+  @Bean
+  public YouTubeService youTubeService() {
+    if (youTubeApiConfig.useFake()) {
+      return new YouTubeServiceFake();
+    }
+
+    return new YouTubeServiceReal(youTubeApiConfig);
   }
 }
