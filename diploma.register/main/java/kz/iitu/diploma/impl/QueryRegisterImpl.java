@@ -204,6 +204,30 @@ public class QueryRegisterImpl implements QueryRegister {
                 }
               }
             }
+
+            if (key.equals("channel_results")) {
+              for (Object o : (List) map.get(key)) {
+                if (!duplicates.contains(getLink(o))) {
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
+                  duplicates.add(getLink(o));
+                }
+              }
+            }
+
+            if (key.equals("movie_results")) {
+              for (Object o : (List) map.get(key)) {
+                if (!duplicates.contains(getLink(o))) {
+                  searchInformationList.add(SearchInformation.builder()
+                      .title(getTitle(o))
+                      .url(getLink(o))
+                      .build());
+                  duplicates.add(getLink(o));
+                }
+              }
+            }
           }
         });
         break;
