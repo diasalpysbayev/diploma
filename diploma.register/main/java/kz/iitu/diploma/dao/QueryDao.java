@@ -1,5 +1,6 @@
 package kz.iitu.diploma.dao;
 
+import kz.iitu.diploma.model.search_engine.PlaceInfo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -21,9 +22,12 @@ public interface QueryDao {
                  @Param(value = "clientId") Long clientId,
                  @Param(value = "valuestr") String valuestr);
 
-  @Insert("insert into query_info(id, query_id, title, url) values (#{id}, #{queryId}, #{title}, #{url})")
+  @Insert("insert into query_info(id, query_id, title, url, latitude, longitude, rating, description, address, phone) " +
+      "values (#{id}, #{queryId}, #{title}, #{url}, #{placeInfo.latitude}, #{placeInfo.longitude}, #{placeInfo.rating}, " +
+      "#{placeInfo.description}, #{placeInfo.address}, #{placeInfo.phone})")
   void saveQueryInfo(@Param(value = "id") Long id,
-                 @Param(value = "queryId") Long queryId,
-                 @Param(value = "title") String title,
-                 @Param(value = "url") String url);
+                     @Param(value = "queryId") Long queryId,
+                     @Param(value = "title") String title,
+                     @Param(value = "url") String url,
+                     @Param(value = "placeInfo")PlaceInfo placeInfo);
 }

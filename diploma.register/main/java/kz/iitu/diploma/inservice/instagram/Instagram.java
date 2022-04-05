@@ -18,7 +18,7 @@ public class Instagram {
     insta.login();
 
     InstagramSearchLocationsResult locationsResult = new InstagramSearchLocationsResult();
-    InstagramSearchUsernameResult  usernameResult  = insta.sendRequest(new InstagramSearchUsernameRequest("whataboutemil"));
+    InstagramSearchUsernameResult  usernameResult  = insta.sendRequest(new InstagramSearchUsernameRequest("Dias Alpysbayev"));
 
     InstagramSearchTagsResult tagsResult = insta.sendRequest(new InstagramSearchTagsRequest("almaty")); // media_count - количество публикаций под тегом
     tagsResult.getResults();

@@ -8,6 +8,7 @@ import kz.iitu.diploma.register.QueryRegister;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class DiplomaApplicationTests extends AbstractTestParent{
@@ -29,7 +30,8 @@ public class DiplomaApplicationTests extends AbstractTestParent{
     public void test() {
         QueryRecord queryRecord = new QueryRecord();
         queryRecord.queryList = new ArrayList<>();
-        QueryDetail queryDetail = QueryDetail.builder().name("Здоровый сон").isVideo(true).build();
+        QueryDetail queryDetail = QueryDetail.builder().name("Кастеев").latitude(new BigDecimal("43.23599329415021"))
+            .longitude(new BigDecimal("76.91950068904617")).isVideo(true).build();
 //        queryRecord.queryList.add("Алкоголь вредный ли");
 //        queryRecord.queryList.add("Здоровый сон");
 //        queryRecord.queryList.add("Сигареты вред");

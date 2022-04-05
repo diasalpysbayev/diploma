@@ -66,4 +66,9 @@ public class AllConfigFactory extends FileConfigFactory {
     return createConfig(YouTubeApiConfig.class);
   }
 
+  @Bean
+  public GoogleMapsApiConfig createGoogleMapsApiConfig() {
+    return createConfig(GoogleMapsApiConfig.class);
+  }
+
 }

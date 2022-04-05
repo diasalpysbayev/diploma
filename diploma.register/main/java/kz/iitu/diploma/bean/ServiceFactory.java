@@ -13,6 +13,9 @@ import kz.iitu.diploma.inservice.search_engine.duckduckgo.impl.DuckDuckGoSearchS
 import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
 import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceFake;
 import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceReal;
+import kz.iitu.diploma.inservice.search_engine.google_maps.GoogleMapsService;
+import kz.iitu.diploma.inservice.search_engine.google_maps.impl.GoogleMapsServiceFake;
+import kz.iitu.diploma.inservice.search_engine.google_maps.impl.GoogleMapsServiceReal;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceFake;
 import kz.iitu.diploma.inservice.search_engine.yandex.impl.YandexSearchServiceReal;
@@ -38,6 +41,7 @@ public class ServiceFactory {
   private final SmsServiceConfig    smsServiceConfig;
   private final BingApiConfig       bingApiConfig;
   private final YouTubeApiConfig    youTubeApiConfig;
+  private final GoogleMapsApiConfig googleMapsApiConfig;
   private final RestTemplate        restTemplate;
 
   @Bean
@@ -96,5 +100,14 @@ public class ServiceFactory {
     }
 
     return new YouTubeServiceReal(youTubeApiConfig);
+  }
+
+  @Bean
+  public GoogleMapsService googleMapsService() {
+    if (youTubeApiConfig.useFake()) {
+      return new GoogleMapsServiceFake();
+    }
+
+    return new GoogleMapsServiceReal(googleMapsApiConfig);
   }
 }

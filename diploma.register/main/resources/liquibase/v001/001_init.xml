@@ -73,6 +73,12 @@
         query_id     bigint REFERENCES query (id),
         url          text,
         title        text,
+        latitude     numeric,
+        longitude    numeric,
+        rating       numeric,
+        description  text,
+        address      text,
+        phone        text,
         created_at   timestamp default current_timestamp,
         actual       boolean   default true
         );

@@ -7,5 +7,6 @@ public class SearchInformation {
 
   public String url;
   public String title;
+  public PlaceInfo placeInfo;
 
 }

@@ -1,14 +1,18 @@
 package kz.iitu.diploma.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import kz.iitu.diploma.dao.QueryDao;
 import kz.iitu.diploma.inservice.search_engine.bing.BingSearchService;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
 import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
+import kz.iitu.diploma.inservice.search_engine.google_maps.GoogleMapsService;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.youtube.YouTubeService;
 import kz.iitu.diploma.model.query.QueryDetail;
 import kz.iitu.diploma.model.query.QueryRecord;
+import kz.iitu.diploma.model.search_engine.PlaceInfo;
 import kz.iitu.diploma.model.search_engine.QueryResult;
 import kz.iitu.diploma.model.search_engine.SearchInformation;
 import kz.iitu.diploma.register.QueryRegister;
@@ -17,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +42,8 @@ public class QueryRegisterImpl implements QueryRegister {
   @Autowired
   private YouTubeService          youTubeService;
   @Autowired
+  private GoogleMapsService       googleMapsService;
+  @Autowired
   private QueryDao                queryDao;
   @Autowired
   private SessionRegister         sessionRegister;
@@ -52,13 +59,18 @@ public class QueryRegisterImpl implements QueryRegister {
     QueryResult duckDuckGoResult = new QueryResult();
     QueryResult bingResult       = new QueryResult();
     QueryResult youTubeResult    = new QueryResult();
+    QueryResult googleMapsResult = new QueryResult();
 
     for (List<QueryDetail> queryList : dividedQuery) {
       i++;
       for (QueryDetail query : queryList) {
-        if (query.isVideo) {
-          youTubeResult = youTubeService.search(query.name);
+        if (query.latitude != null && query.longitude != null) {
+
+          googleMapsResult = googleMapsService.search(query);
         }
+        //        if (query.isVideo) {
+        //          youTubeResult = youTubeService.search(query.name);
+        //        }
         //        if (i == 0) {
         //          googleResult = googleSearchService.search(query.name);
         //        } else if (i == 1) {
@@ -77,13 +89,14 @@ public class QueryRegisterImpl implements QueryRegister {
     searchInformationList.addAll(parseResult(duckDuckGoResult, "duckduckgo"));
     searchInformationList.addAll(parseResult(bingResult, "bing"));
     searchInformationList.addAll(parseResult(youTubeResult, "youtube"));
+    searchInformationList.addAll(parseResult(googleMapsResult, "google-maps"));
 
     var queryId = queryDao.nextQueryId();
     queryDao.saveQuery(queryId, sessionRegister.getPrincipal(), queryRecord.queryList.toString());
 
     searchInformationList.forEach(searchInformation -> {
       var queryInfoId = queryDao.nextQueryInfoId();
-      queryDao.saveQueryInfo(queryInfoId, queryId, searchInformation.title, searchInformation.url);
+      queryDao.saveQueryInfo(queryInfoId, queryId, searchInformation.title, searchInformation.url, searchInformation.placeInfo);
     });
 
     return searchInformationList;
@@ -231,6 +244,37 @@ public class QueryRegisterImpl implements QueryRegister {
           }
         });
         break;
+      case "google-maps":
+        queryResult.list.forEach(map -> {
+          for (Object key : map.keySet()) {
+            if (key.equals("place_results")) {
+              String a;
+              try {
+                a = new ObjectMapper().writeValueAsString(map.get(key));
+                var        b   = new ObjectMapper().readValue(a, Object.class);
+                JSONObject obj = new JSONObject((Map<String, ?>) b);
+                PlaceInfo placeInfo = PlaceInfo.builder()
+                    .address(obj.get("address").toString())
+                    .description(obj.get("description").toString())
+                    .phone(obj.get("phone").toString())
+                    .rating(new BigDecimal(obj.get("rating").toString()))
+                    .longitude(new BigDecimal(String.valueOf(((Map<String, BigDecimal>) obj.get("gps_coordinates")).get("longitude"))))
+                    .latitude(new BigDecimal(String.valueOf(((Map<String, BigDecimal>) obj.get("gps_coordinates")).get("latitude"))))
+                    .build();
+
+                searchInformationList.add(SearchInformation.builder()
+                    .url(obj.get("website").toString())
+                    .title(obj.get("title").toString())
+                    .placeInfo(placeInfo)
+                    .build());
+
+              } catch (JsonProcessingException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        });
+        break;
     }
 
     return searchInformationList;
@@ -242,5 +286,9 @@ public class QueryRegisterImpl implements QueryRegister {
 
   private String getTitle(Object o) {
     return new JSONObject((Map) o).get("title").toString();
+  }
+
+  private String getParam(Object o, String name) {
+    return new JSONObject((Map) o).get(name).toString();
   }
 }
