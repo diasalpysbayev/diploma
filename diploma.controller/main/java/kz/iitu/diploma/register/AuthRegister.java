@@ -20,4 +20,6 @@ public interface AuthRegister {
 
   boolean checkTotp(String code);
 
+  void updateDate(ClientRegisterRecord registerRecord);
+
 }

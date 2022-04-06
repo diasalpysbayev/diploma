@@ -78,7 +78,6 @@ public class AuthRegisterImpl implements AuthRegister {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
       }
-      ;
     }
   }
 
@@ -147,7 +146,7 @@ public class AuthRegisterImpl implements AuthRegister {
     authDao.setSecretKeyId(generateSecretKey(), registerRecord.id);
 
     String      encodedPassword = this.passwordEncoder.encode(registerRecord.getPassword());
-    SessionInfo sessionInfo = this.getPerson(registerRecord.phoneNumber, encodedPassword);
+    SessionInfo sessionInfo     = this.getPerson(registerRecord.phoneNumber, encodedPassword);
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
     ContextUtil.setContext(sessionInfo);
 
@@ -216,5 +215,10 @@ public class AuthRegisterImpl implements AuthRegister {
     var id        = sessionRegister.getPrincipal();
     var secretKey = clientDao.getSecretKeyId(id);
     return code.equals(getTOTPCode(secretKey));
+  }
+
+  @Override
+  public void updateDate(ClientRegisterRecord registerRecord) {
+    authDao.updateDate(registerRecord);
   }
 }

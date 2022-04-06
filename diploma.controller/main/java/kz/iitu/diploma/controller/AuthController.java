@@ -20,12 +20,12 @@ public class AuthController {
   @Autowired
   private AuthRegister authRegister;
 
-  @GetMapping("/check-phone")
+  @PostMapping("/check-phone")
   public boolean checkPhoneOnExist(@RequestParam(value = "phoneNumber") String phoneNumber) {
     return authRegister.checkPhone(phoneNumber);
   }
 
-  @GetMapping("/sms-send")
+  @PostMapping("/sms-send")
   public ResponseEntity<String> sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
     if (authRegister.smsSend(phoneNumber)) {
       return ResponseEntity.ok("Success");
@@ -54,10 +54,14 @@ public class AuthController {
     return authRegister.createQRCode();
   }
 
-  @GetMapping("/check-totp")
+  @PostMapping("/check-totp")
   public boolean totp(@RequestParam("code") String code) {
     return authRegister.checkTotp(code);
   }
 
+  @PostMapping("/recover")
+  public void recover(@RequestBody ClientRegisterRecord clientRegister) {
+    authRegister.updateDate(clientRegister);
+  }
 
 }

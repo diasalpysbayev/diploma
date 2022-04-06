@@ -6,6 +6,7 @@ import kz.iitu.diploma.model.auth.SmsRecord;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,7 +30,7 @@ public interface AuthDao {
       "from sms_verification\n" +
       "where created_at >= (now() at time zone 'Asia/Almaty') - interval '1 hour';\n" +
       "and phone_number=#{phoneNumber}")
-  boolean checkNumberOfAttempts(@Param(value = "phoneNumber") String phoneNumber);
+  Boolean checkNumberOfAttempts(@Param(value = "phoneNumber") String phoneNumber);
 
   @Select("select c.id as id, phone_number as phoneNumber, name, surname " +
       "from client c" +
@@ -47,8 +48,8 @@ public interface AuthDao {
   @Select("select count(1) from client where phone_number=#{phoneNumber} and actual=true")
   Long checkIsClientExist(@Param("phoneNumber") String phoneNumber);
 
-  @Insert("insert into client (id, phone_number, password) " +
-      "values(#{id}, #{phoneNumber}, #{password})")
+  @Insert("insert into client (id, phone_number, password, name, surname, patronymic, email) " +
+      "values(#{id}, #{phoneNumber}, #{password}, #{name}, #{surname}, #{patronymic}, #{email})")
   void createClient(ClientRegisterRecord registerRecord);
 
   @Select("select c.id as id, name, surname, phone_number as phone from client_token_storage ct  \n" +
@@ -62,4 +63,14 @@ public interface AuthDao {
   @Insert("insert into client_key_storage (id, client_id) "
       + "  values(#{id}, #{clientId})")
   void setSecretKeyId(@Param("id") String id, @Param("clientId") Long clientId);
+
+  @Update("update client\n" +
+      "set password     = #{registerRecord.password},\n" +
+      "    surname      = #{registerRecord.surname},\n" +
+      "    name         = #{registerRecord.name},\n" +
+      "    patronymic   = #{registerRecord.patronymic},\n" +
+      "    email        = #{registerRecord.email},\n" +
+      "    phone_number = #{registerRecord.phoneNumber}\n" +
+      "where id = #{registerRecord.id}")
+  void updateDate(ClientRegisterRecord registerRecord);
 }

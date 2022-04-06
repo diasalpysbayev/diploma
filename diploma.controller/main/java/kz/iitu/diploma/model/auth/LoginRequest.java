@@ -12,6 +12,5 @@ public class LoginRequest {
   private String phoneNumber;
   @NotBlank(message = "Пароль не может быть пустым")
   private String password;
-  private boolean rememberMe;
 }
 

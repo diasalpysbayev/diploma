@@ -23,6 +23,10 @@ public class ClientRegisterRecord {
 
   public String lastName;
 
+  public String patronymic;
+
+  public String email;
+
   @NotBlank(message = "Пароль не может быть пустым")
   public String password;
 
