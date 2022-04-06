@@ -25,6 +25,12 @@ public interface AuthDao {
       "from x;")
   boolean checkCode(SmsRecord smsRecord);
 
+  @Select("select case when count(*) > 3 then false else true end\n" +
+      "from sms_verification\n" +
+      "where created_at >= (now() at time zone 'Asia/Almaty') - interval '1 hour';\n" +
+      "and phone_number=#{phoneNumber}")
+  boolean checkNumberOfAttempts(@Param(value = "phoneNumber") String phoneNumber);
+
   @Select("select c.id as id, phone_number as phoneNumber, name, surname " +
       "from client c" +
       "left join client c on ct.client_id = c.id and c.actual = true " +

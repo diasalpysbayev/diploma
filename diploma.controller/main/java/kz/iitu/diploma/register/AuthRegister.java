@@ -4,7 +4,7 @@ import kz.iitu.diploma.model.auth.*;
 
 public interface AuthRegister {
 
-  void smsSend(String phone);
+  boolean smsSend(String phone);
 
   boolean checkPhone(String phoneNumber);
 

@@ -21,7 +21,7 @@
         email        varchar(50),
         phone_number varchar(30),
         password     varchar(100),
-        created_at   timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual       boolean   default true
       );
 
@@ -33,7 +33,7 @@
         id           bigint primary key,
         phone_number varchar(30),
         code         varchar(10),
-        created_at    timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual       boolean   default true
       );
 
@@ -41,7 +41,7 @@
       (
         id         varchar(100) primary key,
         client_id  bigint REFERENCES client (id),
-        created_at timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual     boolean   default true
       );
 
@@ -49,7 +49,7 @@
       (
         id           varchar(100) primary key,
         client_id    bigint REFERENCES client (id),
-        created_at   timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual       boolean   default true
         );
 
@@ -63,7 +63,7 @@
         id           bigint primary key,
         client_id    bigint REFERENCES client (id),
         valuestr     text,
-        created_at   timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual       boolean   default true
         );
 
@@ -79,7 +79,7 @@
         description  text,
         address      text,
         phone        text,
-        created_at   timestamp default current_timestamp,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
         actual       boolean   default true
         );
       ]]></sql>

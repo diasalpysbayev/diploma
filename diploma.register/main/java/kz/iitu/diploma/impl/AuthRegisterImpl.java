@@ -83,8 +83,11 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @Override
-  public void smsSend(String phoneNumber) {
+  public boolean smsSend(String phoneNumber) {
     if (!phoneNumber.isBlank()) {
+      if (!authDao.checkNumberOfAttempts(phoneNumber)) {
+        return false;
+      }
       var rnd    = new Random();
       var number = rnd.nextInt(999999);
       var code   = String.format("%06d", number);
@@ -101,7 +104,9 @@ public class AuthRegisterImpl implements AuthRegister {
         log.error("eiVaZ9RwBW :: Exception with sms sending = " + e);
         throw new RuntimeException("eiVaZ9RwBW :: " + e);
       }
+      return true;
     }
+    return false;
   }
 
   @Override
@@ -111,6 +116,9 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @Override
   public boolean smsCheck(SmsRecord smsRecord) {
+    if (!authDao.checkNumberOfAttempts(smsRecord.phoneNumber)) {
+      return false;
+    }
     return authDao.checkCode(smsRecord);
   }
 

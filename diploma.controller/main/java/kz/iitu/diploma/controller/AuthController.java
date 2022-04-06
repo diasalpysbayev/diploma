@@ -26,8 +26,11 @@ public class AuthController {
   }
 
   @GetMapping("/sms-send")
-  public void sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
-    authRegister.smsSend(phoneNumber);
+  public ResponseEntity<String> sendSms(@RequestParam(value = "phoneNumber") String phoneNumber) {
+    if (authRegister.smsSend(phoneNumber)) {
+      return ResponseEntity.ok("Success");
+    }
+    return ResponseEntity.status(400).body("Too many attempts");
   }
 
   @PostMapping("/sms-check")
