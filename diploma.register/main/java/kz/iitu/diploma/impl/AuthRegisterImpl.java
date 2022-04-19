@@ -10,10 +10,7 @@ import kz.iitu.diploma.dao.AuthDao;
 import kz.iitu.diploma.dao.ClientDao;
 import kz.iitu.diploma.exception.DuplicatePhoneException;
 import kz.iitu.diploma.inservice.sms.SmsService;
-import kz.iitu.diploma.model.auth.ClientRegisterRecord;
-import kz.iitu.diploma.model.auth.LoginRequest;
-import kz.iitu.diploma.model.auth.SessionInfo;
-import kz.iitu.diploma.model.auth.SmsRecord;
+import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.model.file.FileInfo;
 import kz.iitu.diploma.register.AuthRegister;
 import kz.iitu.diploma.register.FileRegister;
@@ -66,17 +63,39 @@ public class AuthRegisterImpl implements AuthRegister {
     //      throw new RuntimeException("k6c0x0K9VZ :: ", e);
     //    }
 
-    String secretKey = "WSI3KBMBKBG7ZI2L6YQUAMAEXW3T3Z3E";
-    String lastCode  = null;
+//    String secretKey = "WSI3KBMBKBG7ZI2L6YQUAMAEXW3T3Z3E";
+//    String lastCode  = null;
+//    while (true) {
+//      String code = getTOTPCode(secretKey);
+//      if (!code.equals(lastCode)) {
+//        System.out.println(code);
+//      }
+//      lastCode = code;
+//      try {
+//        Thread.sleep(1000);
+//      } catch (InterruptedException e) {
+//      }
+//    }
+
+    int[] nums = {2,5,5,11};
+    int target = 10;
+
+    int left = 0;
+    int right = nums.length - 1;
+
+    int[] output = new int[2];
+
     while (true) {
-      String code = getTOTPCode(secretKey);
-      if (!code.equals(lastCode)) {
-        System.out.println(code);
-      }
-      lastCode = code;
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
+      if (nums[left] + nums[right] == target) {
+        output[0] = left;
+        output[1] = right;
+        System.out.println(output[0] + " " + output[1]);
+        break;
+      } else if (right > 1 && left == 0){
+        right--;
+      } else if (left < nums.length - 2) {
+        right = nums.length - 1;
+        left++;
       }
     }
   }
@@ -123,8 +142,7 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @Override
   public SessionInfo login(LoginRequest request) {
-    String      encodedPassword = this.passwordEncoder.encode(request.getPassword());
-    SessionInfo sessionInfo     = this.getPerson(request.getPhoneNumber(), encodedPassword);
+    SessionInfo sessionInfo     = this.getPerson(request.getPhoneNumber());
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
     authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
@@ -145,8 +163,7 @@ public class AuthRegisterImpl implements AuthRegister {
     //todo save smsCode in terms of use and add система штрафов
     authDao.setSecretKeyId(generateSecretKey(), registerRecord.id);
 
-    String      encodedPassword = this.passwordEncoder.encode(registerRecord.getPassword());
-    SessionInfo sessionInfo     = this.getPerson(registerRecord.phoneNumber, encodedPassword);
+    SessionInfo sessionInfo     = this.getPerson(registerRecord.phoneNumber);
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
     ContextUtil.setContext(sessionInfo);
 
@@ -161,10 +178,10 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @NotNull
-  private SessionInfo getPerson(String phone, String encodedPassword) {
-    var authDetail = this.authDao.getClientByPhoneAndPassword(phone, encodedPassword);
-    log.info("u3DLlHbXM6 :: Session = " + authDetail);
-    return authDetail;
+  private SessionInfo getPerson(String phone) {
+    var sessionInfo = this.authDao.getClientByPhoneAndPassword(phone);
+    log.info("u3DLlHbXM6 :: Session = " + sessionInfo);
+    return sessionInfo;
   }
 
   private void checkPhone(ClientRegisterRecord request) {
@@ -175,10 +192,8 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @Override
-  public String createQRCode() {
-    log.info("K07ISc8Gck :: principal = " + sessionRegister.getPrincipal());
-
-    String secretKey   = clientDao.getSecretKeyId(sessionRegister.getPrincipal());
+  public String createQRCode(String phoneNumber) {
+    String secretKey   = clientDao.getSecretKeyId(phoneNumber);
     String email       = clientDao.getEmail(sessionRegister.getPrincipal());
     String companyName = "Diploma";
     String barCodeUrl  = getGoogleAuthenticatorBarCode(secretKey, email, companyName);
@@ -211,14 +226,23 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @Override
-  public boolean checkTotp(String code) {
-    var id        = sessionRegister.getPrincipal();
-    var secretKey = clientDao.getSecretKeyId(id);
-    return code.equals(getTOTPCode(secretKey));
+  public SessionInfo checkTotp(String code, String phoneNumber) {
+    var secretKey = clientDao.getSecretKeyId(phoneNumber);
+
+    if (!code.equals(getTOTPCode(secretKey))) {
+      return null;
+    }
+
+    return this.authDao.getClientByPhoneAndPassword(phoneNumber);
   }
 
   @Override
   public void updateDate(ClientRegisterRecord registerRecord) {
     authDao.updateDate(registerRecord);
+  }
+
+  @Override
+  public UserInfo getUserInfo(String tokenId) {
+    return clientDao.getUserInfo(tokenId);
   }
 }

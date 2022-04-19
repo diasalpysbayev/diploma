@@ -1,9 +1,6 @@
 package kz.iitu.diploma.controller;
 
-import kz.iitu.diploma.model.auth.ClientRegisterRecord;
-import kz.iitu.diploma.model.auth.LoginRequest;
-import kz.iitu.diploma.model.auth.SessionInfo;
-import kz.iitu.diploma.model.auth.SmsRecord;
+import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.register.AuthRegister;
 import kz.iitu.diploma.util.Json;
 import lombok.SneakyThrows;
@@ -49,19 +46,25 @@ public class AuthController {
     return ResponseEntity.ok(authRegister.login(loginRequest));
   }
 
-  @GetMapping("/get-qr")
-  public String getQrCode() {
-    return authRegister.createQRCode();
+  @PostMapping("/get-qr")
+  public String getQrCode(@Valid @RequestBody LoginRequest loginRequest) {
+    return authRegister.createQRCode(loginRequest.getPhoneNumber());
   }
 
   @PostMapping("/check-totp")
-  public boolean totp(@RequestParam("code") String code) {
-    return authRegister.checkTotp(code);
+  public ResponseEntity<?> totp(@RequestParam("code") String code, @RequestParam("phoneNumber") String phoneNumber) {
+    SessionInfo sessionInfo = authRegister.checkTotp(code, phoneNumber);
+    return sessionInfo != null ? ResponseEntity.ok(sessionInfo) : ResponseEntity.status(400).body("Неверный код");
   }
 
   @PostMapping("/recover")
   public void recover(@RequestBody ClientRegisterRecord clientRegister) {
     authRegister.updateDate(clientRegister);
+  }
+
+  @GetMapping("/get-info")
+  public UserInfo getInfo(@RequestParam(value = "tokenId") String tokenId) {
+    return authRegister.getUserInfo(tokenId);
   }
 
 }

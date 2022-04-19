@@ -13,12 +13,12 @@ public interface SmsServiceConfig {
   @DefaultStrValue("http://api.mobizon.kz/service/message/sendsmsmessage")
   String host();
 
-  @Description("Ключь API")
+  @Description("Ключ API")
   @DefaultStrValue("kz3fb20d646b2e6ead73e46ff3ad366871b9bca6de1a9c473c9ada06ea00865a1ecfc9")
   String apiKey();
 
   @Description("Подпись отправителя")
-  @DefaultStrValue("Dias")
+  @DefaultStrValue("")
   String from();
 
   @DefaultIntValue(120)

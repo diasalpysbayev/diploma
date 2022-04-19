@@ -28,17 +28,16 @@ public interface AuthDao {
 
   @Select("select case when count(*) > 3 then false else true end\n" +
       "from sms_verification\n" +
-      "where created_at >= (now() at time zone 'Asia/Almaty') - interval '1 hour';\n" +
+      "where created_at >= (now() at time zone 'Asia/Almaty') - interval '1 hour'\n" +
       "and phone_number=#{phoneNumber}")
   Boolean checkNumberOfAttempts(@Param(value = "phoneNumber") String phoneNumber);
 
-  @Select("select c.id as id, phone_number as phoneNumber, name, surname " +
-      "from client c" +
-      "left join client c on ct.client_id = c.id and c.actual = true " +
-      "where phone_number=#{phoneNumber} and password=#{password} and actual=true")
-  SessionInfo getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
+  @Select("select id, phone_number as phoneNumber, name, surname, email " +
+      "from client " +
+      "where phone_number=#{phoneNumber} and actual=true")
+  SessionInfo getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber);
 
-  @Select("select id, name, surname from client where id=#{id} and actual=true")
+  @Select("select id, name, surname, email from client where id=#{id} and actual=true")
   SessionInfo getClientById(@Param("id") Long id);
 
   @Insert("insert into client_token_storage (id, client_id) "
@@ -49,10 +48,10 @@ public interface AuthDao {
   Long checkIsClientExist(@Param("phoneNumber") String phoneNumber);
 
   @Insert("insert into client (id, phone_number, password, name, surname, patronymic, email) " +
-      "values(#{id}, #{phoneNumber}, #{password}, #{name}, #{surname}, #{patronymic}, #{email})")
+      "values(#{id}, #{phoneNumber}, #{password}, #{firstName}, #{lastName}, #{patronymic}, #{email})")
   void createClient(ClientRegisterRecord registerRecord);
 
-  @Select("select c.id as id, name, surname, phone_number as phone from client_token_storage ct  \n" +
+  @Select("select c.id as id, name, surname, email, phone_number as phone from client_token_storage ct  \n" +
       "    left join client c on ct.client_id = c.id and c.actual = true \n" +
       "    where ct.id = #{tokenId} and ct.actual = true ")
   SessionInfo getAuthDetailsByToken(@Param("tokenId") String tokenId);

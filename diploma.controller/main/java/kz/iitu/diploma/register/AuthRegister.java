@@ -16,10 +16,11 @@ public interface AuthRegister {
 
   SessionInfo getAuthDetailsByToken(String ggToken);
 
-  String createQRCode();
+  String createQRCode(String phoneNumber);
 
-  boolean checkTotp(String code);
+  SessionInfo checkTotp(String code, String phoneNumber);
 
   void updateDate(ClientRegisterRecord registerRecord);
 
+  UserInfo getUserInfo(String tokenId);
 }

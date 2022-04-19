@@ -18,6 +18,8 @@ import kz.iitu.diploma.model.search_engine.SearchInformation;
 import kz.iitu.diploma.register.QueryRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import lombok.RequiredArgsConstructor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +50,11 @@ public class QueryRegisterImpl implements QueryRegister {
   @Autowired
   private SessionRegister         sessionRegister;
 
+  private static final Logger log = LogManager.getLogger(AuthRegisterImpl.class);
+
   @Override
   public List<SearchInformation> executeQuery(QueryRecord queryRecord) {
+    log.info("xo5uPSTDKB :: QueryRecord = " + queryRecord);
     var dividedQuery = divideQuery(queryRecord);
 
     int i = -1;
@@ -65,21 +70,20 @@ public class QueryRegisterImpl implements QueryRegister {
       i++;
       for (QueryDetail query : queryList) {
         if (query.latitude != null && query.longitude != null) {
-
           googleMapsResult = googleMapsService.search(query);
         }
-        //        if (query.isVideo) {
-        //          youTubeResult = youTubeService.search(query.name);
-        //        }
-        //        if (i == 0) {
-        //          googleResult = googleSearchService.search(query.name);
-        //        } else if (i == 1) {
-        //          yandexResult = yandexSearchService.search(query.name);
-        //        } else if (i == 2) {
-        //          duckDuckGoResult = duckDuckGoSearchService.search(query.name);
-        //        } else {
-        //          bingResult = bingSearchService.search(query.name);
-        //        }
+        if (query.isVideo) {
+          youTubeResult = youTubeService.search(query.name);
+        }
+        if (i == 0) {
+          googleResult = googleSearchService.search(query.name);
+        } else if (i == 1) {
+          yandexResult = yandexSearchService.search(query.name);
+        } else if (i == 2) {
+          duckDuckGoResult = duckDuckGoSearchService.search(query.name);
+        } else {
+          bingResult = bingSearchService.search(query.name);
+        }
       }
     }
 

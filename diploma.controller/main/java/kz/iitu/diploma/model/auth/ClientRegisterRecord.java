@@ -19,9 +19,9 @@ public class ClientRegisterRecord {
 
   public String smsCode;
 
-  public String firstName;
+  public String name;
 
-  public String lastName;
+  public String surname;
 
   public String patronymic;
 
@@ -50,8 +50,8 @@ public class ClientRegisterRecord {
       this.record.phoneNumber = phoneNumber;
       this.record.password = password;
       this.record.confirmPassword = confirmPassword;
-      this.record.firstName = firstName;
-      this.record.lastName = lastName;
+      this.record.name = firstName;
+      this.record.surname = lastName;
       return this;
     }
 

@@ -19,7 +19,7 @@ public class QueryController {
   private QueryRegister queryRegister;
 
   @PostMapping("/execute-query")
-  public List<SearchInformation> checkPhoneOnExist(@RequestBody QueryRecord queryRecord) {
+  public List<SearchInformation> executeQuery(@RequestBody QueryRecord queryRecord) {
     return queryRegister.executeQuery(queryRecord);
   }
 
