@@ -1,6 +1,5 @@
 package kz.iitu.diploma.impl;
 
-import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -18,24 +17,20 @@ import kz.iitu.diploma.register.FileRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import kz.iitu.diploma.util.ContextUtil;
 import lombok.SneakyThrows;
-import opennlp.tools.langdetect.Language;
-import opennlp.tools.langdetect.LanguageDetector;
-import opennlp.tools.langdetect.LanguageDetectorME;
-import opennlp.tools.langdetect.LanguageDetectorModel;
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.sentdetect.SentenceModel;
-import opennlp.tools.tokenize.TokenizerME;
-import opennlp.tools.tokenize.TokenizerModel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
@@ -62,72 +57,40 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @SneakyThrows
   public static void main(String[] args) {
-    //    var a = generateSecretKey();
-    //    String secretKey   = a;
-    //    System.out.println(a);
-    //    String email       = "John";
-    //    String companyName = "Diploma";
-    //    String barCodeUrl  = getGoogleAuthenticatorBarCode(secretKey, email, companyName);
-    //    try {
-    //      //todo return as file
-    //      generateQRCode(barCodeUrl);
+    //    InputStream is = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
     //
-    //    } catch (WriterException | IOException e) {
-    //      throw new RuntimeException("k6c0x0K9VZ :: ", e);
-    //    }
+    //    TokenizerModel model     = new TokenizerModel(is);
+    //    TokenizerME    tokenizer = new TokenizerME(model);
+    //    String[]       tokens    = tokenizer.tokenize("Привет меня зовут Диас");
+    //
+    //    System.out.println(tokens);
 
-//    String secretKey = "WSI3KBMBKBG7ZI2L6YQUAMAEXW3T3Z3E";
-//    String lastCode  = null;
-//    while (true) {
-//      String code = getTOTPCode(secretKey);
-//      if (!code.equals(lastCode)) {
-//        System.out.println(code);
-//      }
-//      lastCode = code;
-//      try {
-//        Thread.sleep(1000);
-//      } catch (InterruptedException e) {
-//      }
-//    }
+    String output = getUrlContents("https://www.kazportal.kz/biografiya-abyilhan-kasteev");
+    Document doc  = Jsoup.parse(output);
+    String   text = doc.body().text();
+    System.out.println(text);
 
-//    int[] nums = {2,5,5,11};
-//    int target = 10;
-//
-//    int left = 0;
-//    int right = nums.length - 1;
-//
-//    int[] output = new int[2];
-//
-//    while (true) {
-//      if (nums[left] + nums[right] == target) {
-//        output[0] = left;
-//        output[1] = right;
-//        System.out.println(output[0] + " " + output[1]);
-//        break;
-//      } else if (right > 1 && left == 0){
-//        right--;
-//      } else if (left < nums.length - 2) {
-//        right = nums.length - 1;
-//        left++;
-//      }
-//    }
+  }
 
-    String      text   = "Привет меня зовут Диас";   // It can be Unicode text
-    InputStream is = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
+  private static String getUrlContents(String theUrl) {
+    StringBuilder content = new StringBuilder();
+    // Use try and catch to avoid the exceptions
+    try {
+      URL           url           = new URL(theUrl); // creating a url object
+      URLConnection urlConnection = url.openConnection(); // creating a urlconnection object
 
-//    LanguageDetectorModel m  = new LanguageDetectorModel(is);
-
-//    SentenceModel model = new SentenceModel(is);
-//
-//    SentenceDetectorME sdetector = new SentenceDetectorME(model);
-//
-//    String sentences[] = sdetector.sentDetect(text);
-
-    TokenizerModel model     = new TokenizerModel(is);
-    TokenizerME    tokenizer = new TokenizerME(model);
-    String[]       tokens    = tokenizer.tokenize("Привет меня зовут Диас");
-
-    System.out.println(tokens);
+      // wrapping the urlconnection in a bufferedreader
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+      String         line;
+      // reading from the urlconnection using the bufferedreader
+      while ((line = bufferedReader.readLine()) != null) {
+        content.append(line + "\n");
+      }
+      bufferedReader.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return content.toString();
   }
 
   @Override
@@ -172,7 +135,7 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @Override
   public SessionInfo login(LoginRequest request) {
-    SessionInfo sessionInfo     = this.getPerson(request.getPhoneNumber());
+    SessionInfo sessionInfo = this.getPerson(request.getPhoneNumber());
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
     authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
@@ -193,7 +156,7 @@ public class AuthRegisterImpl implements AuthRegister {
     //todo save smsCode in terms of use and add система штрафов
     authDao.setSecretKeyId(generateSecretKey(), registerRecord.id);
 
-    SessionInfo sessionInfo     = this.getPerson(registerRecord.phoneNumber);
+    SessionInfo sessionInfo = this.getPerson(registerRecord.phoneNumber);
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
     ContextUtil.setContext(sessionInfo);
 
