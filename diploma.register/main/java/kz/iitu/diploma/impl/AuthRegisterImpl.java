@@ -57,40 +57,7 @@ public class AuthRegisterImpl implements AuthRegister {
 
   @SneakyThrows
   public static void main(String[] args) {
-    //    InputStream is = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
-    //
-    //    TokenizerModel model     = new TokenizerModel(is);
-    //    TokenizerME    tokenizer = new TokenizerME(model);
-    //    String[]       tokens    = tokenizer.tokenize("Привет меня зовут Диас");
-    //
-    //    System.out.println(tokens);
 
-    String output = getUrlContents("https://www.kazportal.kz/biografiya-abyilhan-kasteev");
-    Document doc  = Jsoup.parse(output);
-    String   text = doc.body().text();
-    System.out.println(text);
-
-  }
-
-  private static String getUrlContents(String theUrl) {
-    StringBuilder content = new StringBuilder();
-    // Use try and catch to avoid the exceptions
-    try {
-      URL           url           = new URL(theUrl); // creating a url object
-      URLConnection urlConnection = url.openConnection(); // creating a urlconnection object
-
-      // wrapping the urlconnection in a bufferedreader
-      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-      String         line;
-      // reading from the urlconnection using the bufferedreader
-      while ((line = bufferedReader.readLine()) != null) {
-        content.append(line + "\n");
-      }
-      bufferedReader.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return content.toString();
   }
 
   @Override

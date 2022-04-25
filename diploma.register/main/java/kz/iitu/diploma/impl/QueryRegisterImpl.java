@@ -10,6 +10,7 @@ import kz.iitu.diploma.inservice.search_engine.google.GoogleSearchService;
 import kz.iitu.diploma.inservice.search_engine.google_maps.GoogleMapsService;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.youtube.YouTubeService;
+import kz.iitu.diploma.model.analytics.AnalyticsRecord;
 import kz.iitu.diploma.model.query.QueryDetail;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
@@ -18,39 +19,89 @@ import kz.iitu.diploma.model.search_engine.SearchInformation;
 import kz.iitu.diploma.register.QueryRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import opennlp.tools.tokenize.TokenizerME;
+import opennlp.tools.tokenize.TokenizerModel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.github.demidko.aot.WordformMeaning.lookupForMeanings;
+import static java.lang.System.out;
 
 @Service
 @RequiredArgsConstructor
 public class QueryRegisterImpl implements QueryRegister {
 
+  private static final Logger                  log = LogManager.getLogger(AuthRegisterImpl.class);
   @Autowired
-  private GoogleSearchService     googleSearchService;
+  private              GoogleSearchService     googleSearchService;
   @Autowired
-  private YandexSearchService     yandexSearchService;
+  private              YandexSearchService     yandexSearchService;
   @Autowired
-  private DuckDuckGoSearchService duckDuckGoSearchService;
+  private              DuckDuckGoSearchService duckDuckGoSearchService;
   @Autowired
-  private BingSearchService       bingSearchService;
+  private              BingSearchService       bingSearchService;
   @Autowired
-  private YouTubeService          youTubeService;
+  private              YouTubeService          youTubeService;
   @Autowired
-  private GoogleMapsService       googleMapsService;
+  private              GoogleMapsService       googleMapsService;
   @Autowired
-  private QueryDao                queryDao;
+  private              QueryDao                queryDao;
   @Autowired
-  private SessionRegister         sessionRegister;
+  private              SessionRegister         sessionRegister;
 
-  private static final Logger log = LogManager.getLogger(AuthRegisterImpl.class);
+  private static String getUrlContents(String theUrl) {
+    StringBuilder content = new StringBuilder();
+    try {
+      URL           url           = new URL(theUrl); // creating a url object
+      URLConnection urlConnection = url.openConnection(); // creating a urlconnection object
+
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+      String         line;
+      while ((line = bufferedReader.readLine()) != null) {
+        content.append(line).append("\n");
+      }
+      bufferedReader.close();
+    } catch (Exception e) {
+    }
+    return content.toString();
+  }
+
+  @SneakyThrows
+  private static List<String> getStopList() {
+    List<String> listOfStrings
+        = new ArrayList<String>();
+
+    // load data from file
+    BufferedReader bf = new BufferedReader(
+        new FileReader("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/stop_words_russian.txt"));
+
+    // read entire line as string
+    String line = bf.readLine();
+
+    // checking for end of file
+    while (line != null) {
+      listOfStrings.add(line);
+      line = bf.readLine();
+    }
+
+    // closing bufferreader object
+    bf.close();
+
+    // storing the data in arraylist to array
+    return listOfStrings;
+  }
 
   @Override
   public List<SearchInformation> executeQuery(QueryRecord queryRecord) {
@@ -282,6 +333,77 @@ public class QueryRegisterImpl implements QueryRegister {
     }
 
     return searchInformationList;
+  }
+
+  @SneakyThrows
+  @Override
+  public void analyzeQuery(Long id) {
+
+    List<String> urls = queryDao.getQueryDetails(id);
+
+    if (urls == null || urls.size() == 0) {
+      return;
+    }
+
+    Map<String, Integer> result    = new HashMap<>();
+    InputStream          is        = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
+    TokenizerModel       model     = new TokenizerModel(is);
+    TokenizerME          tokenizer = new TokenizerME(model);
+
+    for (String url : urls) {
+      String   output = getUrlContents(url);
+      Document doc    = Jsoup.parse(output);
+      String   text   = doc.body().text();
+
+      log.info("7sDdIrT7s6 :: text from url " + url + " :: " + text);
+
+      List<String> tokens = List.of(tokenizer.tokenize(text));
+
+      List<String> stopList = getStopList();
+
+      for (String token : tokens) {
+        var meanings = lookupForMeanings(token);
+
+        if (stopList.contains(token)) {
+          continue;
+        }
+
+        if (meanings.stream().map(x -> x.getLemma().toString().toLowerCase()).collect(Collectors.toList()).contains(token.toLowerCase())) {
+          token = meanings.get(0).getLemma().toString();
+        }
+
+        if (result.containsKey(token)) {
+          result.put(token, result.get(token) + 1);
+        } else {
+          result.put(token, 1);
+        }
+      }
+    }
+
+    List<Map.Entry<String, Integer>> sorted = result.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+        .filter(x -> x.getValue() > 3)
+        .collect(Collectors.toList());
+    out.println(sorted);
+
+//    String valuestr = convertMapToString(sorted);
+//
+//    AnalyticsRecord analyticsRecord = AnalyticsRecord.builder()
+//        .id(queryDao.nextAnalyticsId())
+//        .queryId(id)
+//        .valuestr(valuestr)
+//        .build();
+//
+//    queryDao.insertAnalytics(analyticsRecord);
+  }
+
+  public String convertMapToString(Map<String, ?> map) {
+    StringBuilder mapAsString = new StringBuilder();
+    for (String key : map.keySet()) {
+      mapAsString.append(key).append("=").append(map.get(key)).append(",");
+    }
+    mapAsString.delete(mapAsString.length() - 2, mapAsString.length());
+    return mapAsString.toString();
   }
 
   private String getLink(Object o) {

@@ -9,4 +9,6 @@ public interface QueryRegister {
 
   List<SearchInformation> executeQuery(QueryRecord queryRecord);
 
+  void analyzeQuery(Long id);
+
 }

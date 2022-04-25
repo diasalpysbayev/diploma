@@ -11,37 +11,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class DiplomaApplicationTests extends AbstractTestParent{
+public class DiplomaApplicationTests extends AbstractTestParent {
 
-    @Autowired
-    private GoogleApiConfig googleApiConfig;
+  @Autowired
+  private GoogleApiConfig googleApiConfig;
 
-    @Autowired
-    private QueryRegister queryRegister;
+  @Autowired
+  private QueryRegister queryRegister;
 
-    @Test
-    public void google_searchService() {
-        GoogleSearchServiceReal googleSearch = new GoogleSearchServiceReal(googleApiConfig);
-        //    Mockito.when(googleSearch.search("Test")).then()
-        var res = googleSearch.search("наркотики,сигареты");
-    }
+  @Test
+  public void google_searchService() {
+    GoogleSearchServiceReal googleSearch = new GoogleSearchServiceReal(googleApiConfig);
+    //    Mockito.when(googleSearch.search("Test")).then()
+    var res = googleSearch.search("наркотики,сигареты");
+  }
 
-    @Test
-    public void test() {
-        QueryRecord queryRecord = new QueryRecord();
-        queryRecord.queryList = new ArrayList<>();
-        QueryDetail queryDetail = QueryDetail.builder().name("Кастеев").latitude(new BigDecimal("43.23599329415021"))
-            .longitude(new BigDecimal("76.91950068904617")).isVideo(true).build();
-//        queryRecord.queryList.add("Алкоголь вредный ли");
-//        queryRecord.queryList.add("Здоровый сон");
-//        queryRecord.queryList.add("Сигареты вред");
-        queryRecord.queryList.add(queryDetail);
+  @Test
+  public void test() {
+    QueryRecord queryRecord = new QueryRecord();
+    queryRecord.queryList = new ArrayList<>();
+    QueryDetail queryDetail = QueryDetail.builder().name("Кастеев").latitude(new BigDecimal("43.23599329415021"))
+        .longitude(new BigDecimal("76.91950068904617")).isVideo(true).build();
+    //        queryRecord.queryList.add("Алкоголь вредный ли");
+    //        queryRecord.queryList.add("Здоровый сон");
+    //        queryRecord.queryList.add("Сигареты вред");
+    queryRecord.queryList.add(queryDetail);
 
-        //
-        //
-        queryRegister.executeQuery(queryRecord);
-        //
-        //
-    }
+    //
+    //
+    queryRegister.executeQuery(queryRecord);
+    //
+    //
+  }
+
+  @Test
+  public void testAnalytics() {
+    //
+    //
+    queryRegister.analyzeQuery(1L);
+    //
+    //
+  }
 
 }

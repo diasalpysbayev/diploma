@@ -92,4 +92,22 @@
       ]]></sql>
   </changeSet>
 
+  <changeSet author="dalpysbayev" id="005">
+    <sql endDelimiter=";;"><![CDATA[
+      create table if not exists analytics
+      (
+        id           bigint primary key,
+        query_id     bigint REFERENCES query (id),
+        valuestr     text,
+        city         text,
+        top          text,
+        created_at   timestamp default (current_timestamp  AT TIME ZONE 'Asia/Almaty'),
+        actual       boolean   default true
+        );
+
+      CREATE SEQUENCE IF NOT EXISTS analytics_id_seq;
+      ]]></sql>
+  </changeSet>
+
+
 </databaseChangeLog>

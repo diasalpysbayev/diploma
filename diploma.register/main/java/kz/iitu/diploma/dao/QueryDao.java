@@ -1,5 +1,7 @@
 package kz.iitu.diploma.dao;
 
+import kz.iitu.diploma.model.analytics.AnalyticsRecord;
+import kz.iitu.diploma.model.query.QueryDetail;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -7,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Repository
 public interface QueryDao {
@@ -16,6 +19,9 @@ public interface QueryDao {
 
   @Select("select nextval('query_info_id_seq') as id")
   Long nextQueryInfoId();
+
+  @Select("select nextval('analytics_id_seq') as id")
+  Long nextAnalyticsId();
 
   @Insert("insert into query(id, client_id, valuestr) values (#{id}, #{clientId}, #{valuestr})")
   void saveQuery(@Param(value = "id") Long id,
@@ -30,4 +36,13 @@ public interface QueryDao {
                      @Param(value = "title") String title,
                      @Param(value = "url") String url,
                      @Param(value = "placeInfo")PlaceInfo placeInfo);
+
+  @Select("select url " +
+      "from query_info " +
+      "where query_id = #{id};")
+  List<String> getQueryDetails(Long id);
+
+  @Insert("insert into analytics(id, query_id, valuestr, top, city) " +
+      "values (#{record.id}, #{record.queryId}, #{record.valuestr}, #{record.top}, #{record.city})")
+  void insertAnalytics(AnalyticsRecord record);
 }

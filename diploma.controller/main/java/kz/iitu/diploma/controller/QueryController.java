@@ -23,4 +23,9 @@ public class QueryController {
     return queryRegister.executeQuery(queryRecord);
   }
 
+  @PostMapping("/analitics")
+  public void getAnalytics() {
+
+  }
+
 }

@@ -12,6 +12,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -64,6 +65,7 @@ dependencies {
     implementation group: 'org.apache.opennlp', name: 'opennlp-tools', version: '1.9.4'
 
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.14.3'
+    implementation "com.github.demidko:aot:2021.09.19"
 
 }
 
