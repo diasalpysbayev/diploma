@@ -37,7 +37,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.demidko.aot.WordformMeaning.lookupForMeanings;
-import static java.lang.System.out;
 
 @Service
 @RequiredArgsConstructor
@@ -79,27 +78,21 @@ public class QueryRegisterImpl implements QueryRegister {
   }
 
   @SneakyThrows
-  private static List<String> getStopList() {
-    List<String> listOfStrings
-        = new ArrayList<String>();
+  private static List<String> getListFromFile(String url) {
+    List<String> listOfStrings = new ArrayList<>();
 
-    // load data from file
     BufferedReader bf = new BufferedReader(
-        new FileReader("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/stop_words_russian.txt"));
+        new FileReader(url));
 
-    // read entire line as string
     String line = bf.readLine();
 
-    // checking for end of file
     while (line != null) {
       listOfStrings.add(line);
       line = bf.readLine();
     }
 
-    // closing bufferreader object
     bf.close();
 
-    // storing the data in arraylist to array
     return listOfStrings;
   }
 
@@ -337,18 +330,27 @@ public class QueryRegisterImpl implements QueryRegister {
 
   @SneakyThrows
   @Override
-  public void analyzeQuery(Long id) {
+  public AnalyticsRecord analyzeQuery(Long id) {
+
+    AnalyticsRecord analytics = queryDao.getAnalytics(id);
+
+    if (analytics != null) {
+      return analytics;
+    }
 
     List<String> urls = queryDao.getQueryDetails(id);
 
     if (urls == null || urls.size() == 0) {
-      return;
+      return null;
     }
 
     Map<String, Integer> result    = new HashMap<>();
     InputStream          is        = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
     TokenizerModel       model     = new TokenizerModel(is);
     TokenizerME          tokenizer = new TokenizerME(model);
+
+    List<String> stopList = getListFromFile("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/stop_words_russian.txt");
+    List<String> cityList = getListFromFile("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/city.txt");
 
     for (String url : urls) {
       String   output = getUrlContents(url);
@@ -359,7 +361,6 @@ public class QueryRegisterImpl implements QueryRegister {
 
       List<String> tokens = List.of(tokenizer.tokenize(text));
 
-      List<String> stopList = getStopList();
 
       for (String token : tokens) {
         var meanings = lookupForMeanings(token);
@@ -368,7 +369,8 @@ public class QueryRegisterImpl implements QueryRegister {
           continue;
         }
 
-        if (meanings.stream().map(x -> x.getLemma().toString().toLowerCase()).collect(Collectors.toList()).contains(token.toLowerCase())) {
+        if (meanings.stream().map(x -> x.getLemma().toString().toLowerCase())
+            .collect(Collectors.toList()).contains(token.toLowerCase())) {
           token = meanings.get(0).getLemma().toString();
         }
 
@@ -384,27 +386,34 @@ public class QueryRegisterImpl implements QueryRegister {
         .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
         .filter(x -> x.getValue() > 3)
         .collect(Collectors.toList());
-    out.println(sorted);
 
-//    String valuestr = convertMapToString(sorted);
-//
-//    AnalyticsRecord analyticsRecord = AnalyticsRecord.builder()
-//        .id(queryDao.nextAnalyticsId())
-//        .queryId(id)
-//        .valuestr(valuestr)
-//        .build();
-//
-//    queryDao.insertAnalytics(analyticsRecord);
+    String valuestr = sorted.stream()
+        .map(x -> x.getKey() + "=" + x.getValue())
+        .collect(Collectors.joining(","));
+
+    String top = sorted.stream()
+        .limit(10)
+        .map(x -> x.getKey() + "=" + x.getValue())
+        .collect(Collectors.joining(","));
+
+    String foundCity = sorted.stream()
+        .filter(x -> cityList.stream().anyMatch(x.getKey()::equalsIgnoreCase))
+        .map(x -> x.getKey() + "=" + x.getValue())
+        .collect(Collectors.joining(","));
+
+    AnalyticsRecord analyticsRecord = AnalyticsRecord.builder()
+        .id(queryDao.nextAnalyticsId())
+        .queryId(id)
+        .valuestr(valuestr)
+        .city(foundCity)
+        .top(top)
+        .build();
+
+    queryDao.insertAnalytics(analyticsRecord);
+
+    return analyticsRecord;
   }
 
-  public String convertMapToString(Map<String, ?> map) {
-    StringBuilder mapAsString = new StringBuilder();
-    for (String key : map.keySet()) {
-      mapAsString.append(key).append("=").append(map.get(key)).append(",");
-    }
-    mapAsString.delete(mapAsString.length() - 2, mapAsString.length());
-    return mapAsString.toString();
-  }
 
   private String getLink(Object o) {
     return new JSONObject((Map) o).get("link").toString();
