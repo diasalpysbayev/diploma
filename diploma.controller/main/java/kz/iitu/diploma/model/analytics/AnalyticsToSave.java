@@ -6,19 +6,17 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.Map;
-
 @Builder
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Json
-public class AnalyticsRecord {
+public class AnalyticsToSave {
 
-  public Long                 id;
-  public Long                 queryId;
-  public Map<String, Integer> valuestr;
-  public Map<String, Integer> top;
-  public Map<String, Integer> city;
+  public Long id;
+  public Long queryId;
+  public String valuestr;
+  public String top;
+  public String city;
 
 }

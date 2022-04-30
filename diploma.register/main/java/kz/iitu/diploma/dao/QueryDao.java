@@ -1,14 +1,12 @@
 package kz.iitu.diploma.dao;
 
-import kz.iitu.diploma.model.analytics.AnalyticsRecord;
-import kz.iitu.diploma.model.query.QueryDetail;
+import kz.iitu.diploma.model.analytics.AnalyticsToSave;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -46,10 +44,10 @@ public interface QueryDao {
       "from analytics " +
       "where query_id = #{id} " +
       "  and actual = true;")
-  AnalyticsRecord getAnalytics(Long id);
+  AnalyticsToSave getAnalytics(Long id);
 
   @Insert("insert into analytics(id, query_id, valuestr, top, city) " +
       "values (#{record.id}, #{record.queryId}, #{record.valuestr}, #{record.top}, #{record.city}) " +
       "on conflict (id, query_id) do nothing")
-  void insertAnalytics(@Param(value = "record") AnalyticsRecord record);
+  void insertAnalytics(@Param(value = "record") AnalyticsToSave record);
 }

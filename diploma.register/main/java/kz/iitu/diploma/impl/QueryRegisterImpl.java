@@ -11,6 +11,7 @@ import kz.iitu.diploma.inservice.search_engine.google_maps.GoogleMapsService;
 import kz.iitu.diploma.inservice.search_engine.yandex.YandexSearchService;
 import kz.iitu.diploma.inservice.search_engine.youtube.YouTubeService;
 import kz.iitu.diploma.model.analytics.AnalyticsRecord;
+import kz.iitu.diploma.model.analytics.AnalyticsToSave;
 import kz.iitu.diploma.model.query.QueryDetail;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
@@ -35,6 +36,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.demidko.aot.WordformMeaning.lookupForMeanings;
 
@@ -332,10 +334,10 @@ public class QueryRegisterImpl implements QueryRegister {
   @Override
   public AnalyticsRecord analyzeQuery(Long id) {
 
-    AnalyticsRecord analytics = queryDao.getAnalytics(id);
+    AnalyticsToSave analytics = queryDao.getAnalytics(id);
 
     if (analytics != null) {
-      return analytics;
+      return buildAnalyticsRecord(analytics);
     }
 
     List<String> urls = queryDao.getQueryDetails(id);
@@ -401,7 +403,7 @@ public class QueryRegisterImpl implements QueryRegister {
         .map(x -> x.getKey() + "=" + x.getValue())
         .collect(Collectors.joining(","));
 
-    AnalyticsRecord analyticsRecord = AnalyticsRecord.builder()
+    AnalyticsToSave analyticsRecord = AnalyticsToSave.builder()
         .id(queryDao.nextAnalyticsId())
         .queryId(id)
         .valuestr(valuestr)
@@ -411,7 +413,7 @@ public class QueryRegisterImpl implements QueryRegister {
 
     queryDao.insertAnalytics(analyticsRecord);
 
-    return analyticsRecord;
+    return buildAnalyticsRecord(analyticsRecord);
   }
 
 
@@ -425,5 +427,41 @@ public class QueryRegisterImpl implements QueryRegister {
 
   private String getParam(Object o, String name) {
     return new JSONObject((Map) o).get(name).toString();
+  }
+
+  private Map<String, Integer> getMap(List<String> allValues) {
+    Map<String, Integer> map = new HashMap<>();
+
+    for (String value : allValues) {
+      String  key = value.split("=")[0];
+      Integer val = Integer.valueOf(value.split("=")[1]);
+      map.put(key, val);
+    }
+
+    return map;
+  }
+
+  private List<String> getString(String str) {
+    return Stream.of(str.split(","))
+        .map(String::new)
+        .collect(Collectors.toList());
+  }
+
+  private AnalyticsRecord buildAnalyticsRecord(AnalyticsToSave analytics) {
+    List<String> allValues = getString(analytics.valuestr);
+    List<String> cityValues = getString(analytics.city);
+    List<String> topValues = getString(analytics.top);
+
+    Map<String, Integer> mapAllValues = getMap(allValues);
+    Map<String, Integer> mapCity      = getMap(cityValues);
+    Map<String, Integer> mapTop       = getMap(topValues);
+
+    return AnalyticsRecord.builder()
+        .queryId(analytics.queryId)
+        .id(analytics.id)
+        .city(mapCity)
+        .valuestr(mapAllValues)
+        .top(mapTop)
+        .build();
   }
 }
