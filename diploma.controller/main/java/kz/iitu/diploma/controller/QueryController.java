@@ -1,8 +1,10 @@
 package kz.iitu.diploma.controller;
 
+import kz.iitu.diploma.model.analytics.AnalyticsRecord;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.SearchInformation;
 import kz.iitu.diploma.register.QueryRegister;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,8 +26,8 @@ public class QueryController {
   }
 
   @PostMapping("/analitics")
-  public void getAnalytics() {
-
+  public AnalyticsRecord getAnalytics(@Param(value = "queryId") Long queryId) {
+    return queryRegister.analyzeQuery(queryId);
   }
 
 }
