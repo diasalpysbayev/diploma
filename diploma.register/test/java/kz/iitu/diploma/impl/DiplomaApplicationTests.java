@@ -2,6 +2,7 @@ package kz.iitu.diploma.impl;
 
 import kz.iitu.diploma.config.GoogleApiConfig;
 import kz.iitu.diploma.inservice.search_engine.google.impl.GoogleSearchServiceReal;
+import kz.iitu.diploma.model.analytics.AnalyticsRecord;
 import kz.iitu.diploma.model.query.QueryDetail;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.register.QueryRegister;
@@ -48,9 +49,26 @@ public class DiplomaApplicationTests extends AbstractTestParent {
   public void testAnalytics() {
     //
     //
-    queryRegister.analyzeQuery(1L);
+    AnalyticsRecord analyticsRecord = queryRegister.analyzeQuery(1L);
     //
     //
+
+    System.out.println(analyticsRecord);
   }
+
+  @Test
+  public void leet() {
+    int dividend = 10;
+    int divisor = 3;
+
+    int remainder = dividend;
+
+    while (remainder >= 1) {
+      remainder = dividend - divisor;
+    }
+
+    System.out.println(remainder);
+  }
+
 
 }

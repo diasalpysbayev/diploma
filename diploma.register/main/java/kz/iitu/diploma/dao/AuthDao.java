@@ -32,9 +32,10 @@ public interface AuthDao {
       "and phone_number=#{phoneNumber}")
   Boolean checkNumberOfAttempts(@Param(value = "phoneNumber") String phoneNumber);
 
-  @Select("select id, phone_number as phoneNumber, name, surname, email " +
+  @Select("select client.id, phone_number as phoneNumber, name, surname, email, cts.id as tokenId " +
       "from client " +
-      "where phone_number=#{phoneNumber} and actual=true")
+      "left join client_token_storage cts on cts.client_id = client.id and cts.actual = true " +
+      "where phone_number=#{phoneNumber} and client.actual=true")
   SessionInfo getClientByPhoneAndPassword(@Param("phoneNumber") String phoneNumber);
 
   @Select("select id, name, surname, email from client where id=#{id} and actual=true")

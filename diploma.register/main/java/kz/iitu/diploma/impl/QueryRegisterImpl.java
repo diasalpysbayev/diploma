@@ -65,8 +65,8 @@ public class QueryRegisterImpl implements QueryRegister {
   private static String getUrlContents(String theUrl) {
     StringBuilder content = new StringBuilder();
     try {
-      URL           url           = new URL(theUrl); // creating a url object
-      URLConnection urlConnection = url.openConnection(); // creating a urlconnection object
+      URL           url           = new URL(theUrl);
+      URLConnection urlConnection = url.openConnection();
 
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
       String         line;

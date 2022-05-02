@@ -34,7 +34,7 @@ public class GoogleSearchServiceReal implements GoogleSearchService {
 
     String gl    = "&gl=kz";
     String safe  = "&safe=off";
-    String asQdr = "&as_qdr=d10"; // last 10 days
+    String asQdr = "&as_qdr=d10";
 
     StringBuilder q = new StringBuilder("&q=" + query);
     q.append(gl).append(safe);

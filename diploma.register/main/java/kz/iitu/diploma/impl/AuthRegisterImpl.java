@@ -167,7 +167,7 @@ public class AuthRegisterImpl implements AuthRegister {
       try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
         MatrixToImageWriter.writeToStream(matrix, "png", out);
         FileInfo fileInfo = new FileInfo();
-        fileInfo.name       = new Date().toString() + ".png";
+        fileInfo.name       = new Date().getTime() + ".png";
         fileInfo.mimeType   = "image/png";
         fileInfo.size       = Long.parseLong(String.valueOf(out.size()));
         fileInfo.base64data = Base64.getEncoder().encodeToString(out.toByteArray());
@@ -193,7 +193,9 @@ public class AuthRegisterImpl implements AuthRegister {
       return null;
     }
 
-    return this.authDao.getClientByPhoneAndPassword(phoneNumber);
+    SessionInfo sessionInfo = this.getPerson(phoneNumber);
+    log.info("XN6P7xI656 :: Session Info = " + sessionInfo);
+    return sessionInfo;
   }
 
   @Override
