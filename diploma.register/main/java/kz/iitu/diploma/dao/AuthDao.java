@@ -49,7 +49,7 @@ public interface AuthDao {
   Long checkIsClientExist(@Param("phoneNumber") String phoneNumber);
 
   @Insert("insert into client (id, phone_number, password, name, surname, patronymic, email) " +
-      "values(#{id}, #{phoneNumber}, #{password}, #{firstName}, #{lastName}, #{patronymic}, #{email})")
+      "values(#{id}, #{phoneNumber}, #{password}, #{name}, #{surname}, #{patronymic}, #{email})")
   void createClient(ClientRegisterRecord registerRecord);
 
   @Select("select c.id as id, name, surname, email, phone_number as phone from client_token_storage ct  \n" +
@@ -73,4 +73,24 @@ public interface AuthDao {
       "    phone_number = #{registerRecord.phoneNumber}\n" +
       "where id = #{registerRecord.id}")
   void updateDate(ClientRegisterRecord registerRecord);
+
+  @Select("with amount as (select count(*) as amount\n" +
+      "                from client_token_storage\n" +
+      "                where client_id = #{clientId}\n" +
+      "                  and actual = true)\n" +
+      "select case when amount.amount >= 1 then true else false end\n" +
+      "from amount")
+  boolean checkSessionSingularity(@Param(value = "clientId") Long clientId);
+
+  @Select("select id\n" +
+      "from client_token_storage\n" +
+      "where client_id = 1\n" +
+      "order by created_at desc\n" +
+      "limit 1;")
+  String getLastTokenId();
+
+  @Update("update client_token_storage\n" +
+      "set actual = false\n" +
+      "where client_id = #{id} and actual = true;")
+  void updateOldSessions(Long id);
 }

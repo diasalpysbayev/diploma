@@ -12,25 +12,21 @@ import kz.iitu.diploma.exception.DuplicatePhoneException;
 import kz.iitu.diploma.inservice.sms.SmsService;
 import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.model.file.FileInfo;
+import kz.iitu.diploma.model.server_send.ServerSendEmitter;
 import kz.iitu.diploma.register.AuthRegister;
 import kz.iitu.diploma.register.FileRegister;
+import kz.iitu.diploma.register.ServerSendRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import kz.iitu.diploma.util.ContextUtil;
 import lombok.SneakyThrows;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
@@ -41,19 +37,21 @@ import static kz.iitu.diploma.util.AuthenticatorUtil.*;
 @Service
 public class AuthRegisterImpl implements AuthRegister {
 
-  private static final Logger          log = LogManager.getLogger(AuthRegisterImpl.class);
+  private static final Logger             log = LogManager.getLogger(AuthRegisterImpl.class);
   @Autowired
-  private              PasswordEncoder passwordEncoder;
+  private              PasswordEncoder    passwordEncoder;
   @Autowired
-  private              AuthDao         authDao;
+  private              AuthDao            authDao;
   @Autowired
-  private              ClientDao       clientDao;
+  private              ClientDao          clientDao;
   @Autowired
-  private              SmsService      smsService;
+  private              SmsService         smsService;
   @Autowired
-  private              SessionRegister sessionRegister;
+  private              SessionRegister    sessionRegister;
   @Autowired
-  private              FileRegister    fileRegister;
+  private              FileRegister       fileRegister;
+  @Autowired
+  private              ServerSendRegister serverSendRegister;
 
   @SneakyThrows
   public static void main(String[] args) {
@@ -105,9 +103,14 @@ public class AuthRegisterImpl implements AuthRegister {
     SessionInfo sessionInfo = this.getPerson(request.getPhoneNumber());
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
-    authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
-
     ContextUtil.setContext(sessionInfo);
+
+    if (authDao.checkSessionSingularity(sessionInfo.id)) {
+      authDao.updateOldSessions(sessionInfo.id);
+      serverSendRegister.emitEvent();
+    }
+
+    authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
 
     log.info("17YMnqh7aq :: Session = " + sessionInfo);
 
@@ -194,6 +197,20 @@ public class AuthRegisterImpl implements AuthRegister {
     }
 
     SessionInfo sessionInfo = this.getPerson(phoneNumber);
+    sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
+
+    ContextUtil.setContext(sessionInfo);
+
+    log.info("o1e5hfgH8V :: session id = " + (sessionInfo.id));
+    log.info("vzkhge9QsT :: checkSessionSingularity = " + authDao.checkSessionSingularity(sessionInfo.id));
+    if (authDao.checkSessionSingularity(sessionInfo.id)) {
+      authDao.updateOldSessions(sessionInfo.id);
+      log.info("o4OQn1C77k :: Emitters = " + ServerSendEmitter.getEmitters().toString());
+      serverSendRegister.emitEvent();
+    }
+
+    authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
+
     log.info("XN6P7xI656 :: Session Info = " + sessionInfo);
     return sessionInfo;
   }
@@ -207,4 +224,5 @@ public class AuthRegisterImpl implements AuthRegister {
   public UserInfo getUserInfo(String tokenId) {
     return clientDao.getUserInfo(tokenId);
   }
+
 }
