@@ -347,12 +347,12 @@ public class QueryRegisterImpl implements QueryRegister {
     }
 
     Map<String, Integer> result    = new HashMap<>();
-    InputStream          is        = new FileInputStream("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/en-token.bin");
+    InputStream          is        = new FileInputStream("main/resources/en-token.bin");
     TokenizerModel       model     = new TokenizerModel(is);
     TokenizerME          tokenizer = new TokenizerME(model);
 
-    List<String> stopList = getListFromFile("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/stop_words_russian.txt");
-    List<String> cityList = getListFromFile("/Users/dias/IdeaProjects/diploma/diploma.register/main/resources/city.txt");
+    List<String> stopList = getListFromFile("main/resources/stop_words_russian.txt");
+    List<String> cityList = getListFromFile("main/resources/city.txt");
 
     for (String url : urls) {
       String   output = getUrlContents(url);
