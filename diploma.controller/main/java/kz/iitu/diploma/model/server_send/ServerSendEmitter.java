@@ -2,18 +2,18 @@ package kz.iitu.diploma.model.server_send;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerSendEmitter {
 
-  private static final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+  private static final Map<Long, SseEmitter> emitters = new HashMap<>();
 
-  public static List<SseEmitter> getEmitters() {
+  public static Map<Long, SseEmitter> getEmitters() {
     return emitters;
   }
 
-  public static void addEmitters(SseEmitter emitter) {
-    ServerSendEmitter.emitters.add(emitter);
+  public static void addEmitters(Long clientId, SseEmitter emitter) {
+    ServerSendEmitter.emitters.put(clientId, emitter);
   }
 }
