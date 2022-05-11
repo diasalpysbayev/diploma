@@ -33,6 +33,8 @@ public class ServerSendController {
       throw new RuntimeException();
     }
 
+    log.info("2ELsUXVF9d :: Session Id = " + sessionRegister.getPrincipal());
+
     ServerSendEmitter.addEmitters(sessionRegister.getPrincipal(), sseEmitter);
 
     sseEmitter.onCompletion(() -> ServerSendEmitter.getEmitters().remove(sseEmitter));
