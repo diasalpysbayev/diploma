@@ -12,7 +12,6 @@ import kz.iitu.diploma.exception.DuplicatePhoneException;
 import kz.iitu.diploma.inservice.sms.SmsService;
 import kz.iitu.diploma.model.auth.*;
 import kz.iitu.diploma.model.file.FileInfo;
-import kz.iitu.diploma.model.server_send.ServerSendEmitter;
 import kz.iitu.diploma.register.AuthRegister;
 import kz.iitu.diploma.register.FileRegister;
 import kz.iitu.diploma.register.ServerSendRegister;
@@ -107,7 +106,7 @@ public class AuthRegisterImpl implements AuthRegister {
 
     if (authDao.checkSessionSingularity(sessionInfo.id)) {
       authDao.updateOldSessions(sessionInfo.id);
-      serverSendRegister.emitEvent();
+      serverSendRegister.emitEvent(sessionInfo.id);
     }
 
     authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
@@ -205,13 +204,13 @@ public class AuthRegisterImpl implements AuthRegister {
     log.info("vzkhge9QsT :: checkSessionSingularity = " + authDao.checkSessionSingularity(sessionInfo.id));
     if (authDao.checkSessionSingularity(sessionInfo.id)) {
       authDao.updateOldSessions(sessionInfo.id);
-      log.info("o4OQn1C77k :: Emitters = " + ServerSendEmitter.getEmitters().toString());
-      serverSendRegister.emitEvent();
+      //      log.info("o4OQn1C77k :: Emitters = " + ServerSendEmitter.getEmitters().get(sessionInfo.id));
+      serverSendRegister.emitEvent(sessionInfo.id);
     }
 
     authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
 
-    log.info("XN6P7xI656 :: Session Info = " + sessionInfo);
+    //    log.info("XN6P7xI656 :: Session Info = " + sessionInfo);
     return sessionInfo;
   }
 

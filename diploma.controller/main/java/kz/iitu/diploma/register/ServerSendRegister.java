@@ -2,6 +2,6 @@ package kz.iitu.diploma.register;
 
 public interface ServerSendRegister {
 
-  void emitEvent();
+  void emitEvent(Long clientId);
 
 }
