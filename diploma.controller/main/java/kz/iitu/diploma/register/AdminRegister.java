@@ -10,4 +10,6 @@ public interface AdminRegister {
 
   List<ClientRecord> getClientList();
 
+  ClientRecord getClientDetail(Long id);
+
 }

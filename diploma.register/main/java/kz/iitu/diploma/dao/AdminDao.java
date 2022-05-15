@@ -19,4 +19,14 @@ public interface AdminDao {
       "where actual = 1;")
   List<ClientRecord> getClientList();
 
+  @Select("select id,\n" +
+      "       surname,\n" +
+      "       name,\n" +
+      "       patronymic,\n" +
+      "       email,\n" +
+      "       phone_number as phoneNumber\n" +
+      "from client\n" +
+      "where actual = 1 and id = #{id};")
+  ClientRecord getClientDetail(Long id);
+
 }
