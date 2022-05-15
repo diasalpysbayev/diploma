@@ -1,6 +1,7 @@
 package kz.iitu.diploma.register;
 
 import kz.iitu.diploma.model.auth.*;
+import org.springframework.http.ResponseEntity;
 
 public interface AuthRegister {
 
@@ -16,7 +17,7 @@ public interface AuthRegister {
 
   String createQRCode(String phoneNumber);
 
-  SessionInfo checkTotp(String code, String phoneNumber);
+  ResponseEntity<?> checkTotp(String code, String phoneNumber);
 
   void updateDate(ClientRegisterRecord registerRecord);
 

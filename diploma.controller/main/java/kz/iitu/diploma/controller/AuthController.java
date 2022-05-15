@@ -47,8 +47,7 @@ public class AuthController {
 
   @PostMapping("/check-totp")
   public ResponseEntity<?> totp(@RequestParam("code") String code, @RequestParam("phoneNumber") String phoneNumber) {
-    SessionInfo sessionInfo = authRegister.checkTotp(code, phoneNumber);
-    return sessionInfo != null ? ResponseEntity.ok(sessionInfo) : ResponseEntity.status(400).body("Неверный код");
+    return authRegister.checkTotp(code, phoneNumber);
   }
 
   @PostMapping("/recover")

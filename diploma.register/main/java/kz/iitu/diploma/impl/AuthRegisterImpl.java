@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -169,30 +170,32 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @Override
-  public SessionInfo checkTotp(String code, String phoneNumber) {
+  public ResponseEntity<?> checkTotp(String code, String phoneNumber) {
+
     var secretKey = clientDao.getSecretKeyId(phoneNumber);
 
     if (!code.equals(getTOTPCode(secretKey))) {
-      return null;
+      return ResponseEntity.status(400).body("CODE");
     }
 
     SessionInfo sessionInfo = this.getPerson(phoneNumber);
+    if (clientDao.checkBlockedUser(sessionInfo.id)) {
+      return ResponseEntity.status(400).body("BLOCKED");
+    }
+
     sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
 
     ContextUtil.setContext(sessionInfo);
 
     log.info("o1e5hfgH8V :: session id = " + (sessionInfo.id));
-    log.info("vzkhge9QsT :: checkSessionSingularity = " + authDao.checkSessionSingularity(sessionInfo.id));
     if (authDao.checkSessionSingularity(sessionInfo.id)) {
       authDao.updateOldSessions(sessionInfo.id);
-      //      log.info("o4OQn1C77k :: Emitters = " + ServerSendEmitter.getEmitters().get(sessionInfo.id));
       serverSendRegister.emitEvent(sessionInfo.id);
     }
 
     authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
 
-    //    log.info("XN6P7xI656 :: Session Info = " + sessionInfo);
-    return sessionInfo;
+    return  ResponseEntity.status(200).body(sessionInfo);
   }
 
   @Override

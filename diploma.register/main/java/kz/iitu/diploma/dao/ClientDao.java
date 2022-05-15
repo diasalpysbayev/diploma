@@ -14,6 +14,11 @@ public interface ClientDao {
       "left join client c on c.id = cks.client_id and c.actual = true and c.phone_number = #{phoneNumber}")
   String getSecretKeyId(String phoneNumber);
 
+  @Select("select case when status = 'BLOCKED' then true else false end\n" +
+      "from client\n" +
+      "where id = #{id}")
+  Boolean checkBlockedUser(Long id);
+
   @Select("select email from client where id=#{id}")
   String getEmail(Long id);
 
