@@ -1,15 +1,11 @@
 package kz.iitu.diploma.controller;
 
-import kz.iitu.diploma.model.analytics.AnalyticsRecord;
-import kz.iitu.diploma.model.query.QueryRecord;
-import kz.iitu.diploma.model.search_engine.SearchInformation;
-import kz.iitu.diploma.register.QueryRegister;
+import kz.iitu.diploma.model.admin.ClientRecord;
+import kz.iitu.diploma.model.admin.ClientStatus;
+import kz.iitu.diploma.register.AdminRegister;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,16 +14,36 @@ import java.util.List;
 public class AdminController {
 
   @Autowired
-  private QueryRegister queryRegister;
+  private AdminRegister adminRegister;
 
-  @PostMapping("/execute-query")
-  public List<SearchInformation> executeQuery(@RequestBody QueryRecord queryRecord) {
-    return queryRegister.executeQuery(queryRecord);
+  @GetMapping("/get-all-clients")
+  public List<ClientRecord> getClientList() {
+    return adminRegister.getClientList();
   }
 
-  @PostMapping("/analitics")
-  public AnalyticsRecord getAnalytics(@Param(value = "queryId") Long queryId) {
-    return queryRegister.analyzeQuery(queryId);
+  @GetMapping("/get-client-detail")
+  public ClientRecord getClientDetail(@Param(value = "id") Long id) {
+    return adminRegister.getClientDetail(id);
+  }
+
+  @PostMapping("/update-client-info")
+  public void updateClientInfo(@RequestBody ClientRecord clientRecord) {
+    adminRegister.updateClientInfo(clientRecord);
+  }
+
+  @PostMapping("/block-query")
+  public void blockQuery(@Param(value = "query") String query) {
+    adminRegister.blockQuery(query);
+  }
+
+  @PostMapping("/unblock-query")
+  public void unblockQuery(@Param(value = "query") String query) {
+    adminRegister.unblockQuery(query);
+  }
+
+  @PostMapping("/unblock-query")
+  public void changeStatus(@Param(value = "status") ClientStatus status, @Param(value = "id") Long id) {
+    adminRegister.changeStatus(status, id);
   }
 
 }
