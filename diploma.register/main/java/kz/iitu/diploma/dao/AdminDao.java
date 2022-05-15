@@ -1,6 +1,7 @@
 package kz.iitu.diploma.dao;
 
 import kz.iitu.diploma.model.admin.ClientRecord;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
@@ -28,5 +29,13 @@ public interface AdminDao {
       "from client\n" +
       "where actual = 1 and id = #{id};")
   ClientRecord getClientDetail(Long id);
+
+  @Select("update client\n" +
+      "set surname      = #{record.surname},\n" +
+      "    patronymic   = #{record.name},\n" +
+      "    email        = #{record.email},\n" +
+      "    phone_number = #{record.phoneNumber}\n" +
+      "where actual = 1 and id = #{id};")
+  void updateClientDetail(@Param(value = "record") ClientRecord record);
 
 }

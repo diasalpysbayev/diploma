@@ -33,4 +33,9 @@ public class AdminRegisterImpl implements AdminRegister {
   public ClientRecord getClientDetail(Long id) {
     return adminDao.getClientDetail(id);
   }
+
+  @Override
+  public void updateClientInfo(ClientRecord record) {
+    adminDao.updateClientDetail(record);
+  }
 }

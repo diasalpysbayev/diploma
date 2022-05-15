@@ -12,4 +12,6 @@ public interface AdminRegister {
 
   ClientRecord getClientDetail(Long id);
 
+  void updateClientInfo(ClientRecord record);
+
 }
