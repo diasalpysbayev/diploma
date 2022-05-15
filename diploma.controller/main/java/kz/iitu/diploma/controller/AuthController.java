@@ -40,12 +40,6 @@ public class AuthController {
     return authRegister.signUp(clientRegister);
   }
 
-  @SneakyThrows
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
-    return ResponseEntity.ok(authRegister.login(loginRequest));
-  }
-
   @PostMapping("/get-qr")
   public String getQrCode(@Valid @RequestBody LoginRequest loginRequest) {
     return authRegister.createQRCode(loginRequest.getPhoneNumber());

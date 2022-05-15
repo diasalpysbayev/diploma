@@ -98,25 +98,6 @@ public class AuthRegisterImpl implements AuthRegister {
   }
 
   @Override
-  public SessionInfo login(LoginRequest request) {
-    SessionInfo sessionInfo = this.getPerson(request.getPhoneNumber());
-    sessionInfo.tokenId = UUID.randomUUID() + "-" + UUID.randomUUID();
-
-    ContextUtil.setContext(sessionInfo);
-
-    if (authDao.checkSessionSingularity(sessionInfo.id)) {
-      authDao.updateOldSessions(sessionInfo.id);
-      serverSendRegister.emitEvent(sessionInfo.id);
-    }
-
-    authDao.setTokenId(sessionInfo.tokenId, sessionInfo.id);
-
-    log.info("17YMnqh7aq :: Session = " + sessionInfo);
-
-    return sessionInfo;
-  }
-
-  @Override
   public SessionInfo signUp(ClientRegisterRecord registerRecord) {
     checkPhone(registerRecord);
     registerRecord.id       = clientDao.nextClientId();

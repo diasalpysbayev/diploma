@@ -10,8 +10,6 @@ public interface AuthRegister {
 
   boolean smsCheck(SmsRecord smsRegisterRecord);
 
-  SessionInfo login(LoginRequest loginRequest) throws Exception;
-
   SessionInfo signUp(ClientRegisterRecord registerRecord);
 
   SessionInfo getAuthDetailsByToken(String ggToken);
