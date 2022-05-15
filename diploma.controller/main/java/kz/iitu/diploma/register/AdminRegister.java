@@ -1,6 +1,7 @@
 package kz.iitu.diploma.register;
 
 import kz.iitu.diploma.model.admin.ClientRecord;
+import kz.iitu.diploma.model.admin.ClientStatus;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.SearchInformation;
 
@@ -17,5 +18,7 @@ public interface AdminRegister {
   void blockQuery(String query);
 
   void unblockQuery(String query);
+
+  void changeStatus(ClientStatus status, Long id);
 
 }

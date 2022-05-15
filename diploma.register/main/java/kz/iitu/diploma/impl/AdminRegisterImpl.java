@@ -2,6 +2,7 @@ package kz.iitu.diploma.impl;
 
 import kz.iitu.diploma.dao.AdminDao;
 import kz.iitu.diploma.model.admin.ClientRecord;
+import kz.iitu.diploma.model.admin.ClientStatus;
 import kz.iitu.diploma.register.AdminRegister;
 import kz.iitu.diploma.register.SessionRegister;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,10 @@ public class AdminRegisterImpl implements AdminRegister {
   @Override
   public void unblockQuery(String query) {
     adminDao.unblockWord(query);
+  }
+
+  @Override
+  public void changeStatus(ClientStatus status, Long id) {
+    adminDao.changeStatus(status, id);
   }
 }

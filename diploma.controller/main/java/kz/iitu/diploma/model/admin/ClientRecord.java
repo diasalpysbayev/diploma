@@ -17,5 +17,6 @@ public class ClientRecord {
   public String patronymic;
   public String email;
   public String phoneNumber;
+  public ClientStatus status;
 
 }

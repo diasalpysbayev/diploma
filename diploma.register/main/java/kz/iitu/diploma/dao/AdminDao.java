@@ -1,6 +1,7 @@
 package kz.iitu.diploma.dao;
 
 import kz.iitu.diploma.model.admin.ClientRecord;
+import kz.iitu.diploma.model.admin.ClientStatus;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -46,5 +47,11 @@ public interface AdminDao {
       "from query_blocked\n" +
       "where valuestr = #{query}")
   void unblockWord(String query);
+
+  @Select("update client\n" +
+      "set status   = #{status},\n" +
+      "where actual = 1 and id = #{id};")
+  void changeStatus(@Param(value = "record") ClientStatus status,
+                    @Param(value = "id") Long id);
 
 }
