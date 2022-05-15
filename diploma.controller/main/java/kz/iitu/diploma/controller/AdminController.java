@@ -41,7 +41,7 @@ public class AdminController {
     adminRegister.unblockQuery(query);
   }
 
-  @PostMapping("/unblock-query")
+  @PostMapping("/change-status")
   public void changeStatus(@Param(value = "status") ClientStatus status, @Param(value = "id") Long id) {
     adminRegister.changeStatus(status, id);
   }
