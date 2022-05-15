@@ -119,5 +119,10 @@
       ]]></sql>
   </changeSet>
 
+  <changeSet author="dalpysbayev" id="007">
+    <sql endDelimiter=";;"><![CDATA[
+      alter table client add column status varchar(100) default 'ACTIVE';
+      ]]></sql>
+  </changeSet>
 
 </databaseChangeLog>
