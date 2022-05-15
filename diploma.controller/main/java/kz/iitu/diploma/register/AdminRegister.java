@@ -14,4 +14,8 @@ public interface AdminRegister {
 
   void updateClientInfo(ClientRecord record);
 
+  void blockQuery(String query);
+
+  void unblockQuery(String query);
+
 }

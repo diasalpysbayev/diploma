@@ -110,5 +110,14 @@
       ]]></sql>
   </changeSet>
 
+  <changeSet author="dalpysbayev" id="006">
+    <sql endDelimiter=";;"><![CDATA[
+      create table if not exists query_blocked
+      (
+        valuestr varchar(100) primary key
+        );
+      ]]></sql>
+  </changeSet>
+
 
 </databaseChangeLog>

@@ -38,4 +38,14 @@ public class AdminRegisterImpl implements AdminRegister {
   public void updateClientInfo(ClientRecord record) {
     adminDao.updateClientDetail(record);
   }
+
+  @Override
+  public void blockQuery(String query) {
+    adminDao.blockWord(query);
+  }
+
+  @Override
+  public void unblockQuery(String query) {
+    adminDao.unblockWord(query);
+  }
 }

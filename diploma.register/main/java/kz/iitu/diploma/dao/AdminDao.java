@@ -38,4 +38,13 @@ public interface AdminDao {
       "where actual = 1 and id = #{id};")
   void updateClientDetail(@Param(value = "record") ClientRecord record);
 
+  @Select("insert into query_blocked(valuestr)\n" +
+      "values (#{query});")
+  void blockWord(String query);
+
+  @Select("delete\n" +
+      "from query_blocked\n" +
+      "where valuestr = #{query}")
+  void unblockWord(String query);
+
 }
