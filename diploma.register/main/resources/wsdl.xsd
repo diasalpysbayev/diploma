@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="query"
             targetNamespace="query"
             elementFormDefault="qualified">
-  <xsd:element name="query">
+  <xsd:element name="queryRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="name" type="xsd:string"/>
         <xsd:element name="isVideo" type="xsd:boolean"/>
         <xsd:element name="latitude" type="xsd:float"/>
         <xsd:element name="longitude" type="xsd:float"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="placeInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string"/>
+      <xsd:element name="address" type="xsd:string"/>
+      <xsd:element name="phone" type="xsd:string"/>
+      <xsd:element name="rating" type="xsd:float"/>
+      <xsd:element name="latitude" type="xsd:float"/>
+      <xsd:element name="longitude" type="xsd:float"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="searchInformation">
+    <xsd:sequence>
+      <xsd:element name="url" type="xsd:string"/>
+      <xsd:element name="title" type="xsd:string"/>
+      <xsd:element name="placeInfo" type="tns:placeInfo"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="result">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="list" type="tns:searchInformation"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

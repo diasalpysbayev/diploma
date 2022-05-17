@@ -1,8 +1,12 @@
 package kz.iitu.diploma.model.query;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import kz.iitu.diploma.model.search_engine.SearchInformation;
 
-@XmlRootElement(name = "query")
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+@XmlRootElement(name = "result")
 public class QuerySoap {
-  public String hello = "Dias";
+  public List<SearchInformation> list = new ArrayList<>();
 }

@@ -28,7 +28,7 @@ public class SoapConfig {
     DefaultWsdl11Definition defaultWsdl11Definition = new DefaultWsdl11Definition();
     defaultWsdl11Definition.setPortTypeName("query");
     defaultWsdl11Definition.setLocationUri("/ws");
-    defaultWsdl11Definition.setTargetNamespace("");
+    defaultWsdl11Definition.setTargetNamespace("query");
     defaultWsdl11Definition.setSchema(schema);
     return defaultWsdl11Definition;
   }

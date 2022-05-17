@@ -3,10 +3,12 @@ package kz.iitu.diploma.model.search_engine;
 import kz.iitu.diploma.util.Json;
 import lombok.Builder;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 @Builder
 @Json
+@XmlRootElement(name = "placeInfo")
 public class PlaceInfo {
 
   public BigDecimal latitude;
