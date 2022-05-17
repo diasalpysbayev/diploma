@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.nimbusds.oauth2.sdk.util.StringUtils.isNotBlank;
+
 @Service
 @RequiredArgsConstructor
 public class AdminRegisterImpl implements AdminRegister {
@@ -42,7 +44,9 @@ public class AdminRegisterImpl implements AdminRegister {
 
   @Override
   public void blockQuery(String query) {
-    adminDao.blockWord(query);
+    if (isNotBlank(query)) {
+      adminDao.blockWord(query);
+    }
   }
 
   @Override

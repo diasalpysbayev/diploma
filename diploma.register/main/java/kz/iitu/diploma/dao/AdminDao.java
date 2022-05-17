@@ -18,7 +18,7 @@ public interface AdminDao {
       "       email,\n" +
       "       phone_number as phoneNumber\n" +
       "from client\n" +
-      "where actual = 1;")
+      "where actual = true;")
   List<ClientRecord> getClientList();
 
   @Select("select id,\n" +
@@ -28,7 +28,7 @@ public interface AdminDao {
       "       email,\n" +
       "       phone_number as phoneNumber\n" +
       "from client\n" +
-      "where actual = 1 and id = #{id};")
+      "where actual = true and id = #{id};")
   ClientRecord getClientDetail(Long id);
 
   @Select("update client\n" +
@@ -36,7 +36,7 @@ public interface AdminDao {
       "    patronymic   = #{record.name},\n" +
       "    email        = #{record.email},\n" +
       "    phone_number = #{record.phoneNumber}\n" +
-      "where actual = 1 and id = #{id};")
+      "where actual = true and id = #{record.id};")
   void updateClientDetail(@Param(value = "record") ClientRecord record);
 
   @Select("insert into query_blocked(valuestr)\n" +
@@ -50,8 +50,8 @@ public interface AdminDao {
 
   @Select("update client\n" +
       "set status   = #{status},\n" +
-      "where actual = 1 and id = #{id};")
-  void changeStatus(@Param(value = "record") ClientStatus status,
+      "where actual = actual and id = #{id};")
+  void changeStatus(@Param(value = "status") ClientStatus status,
                     @Param(value = "id") Long id);
 
 }
