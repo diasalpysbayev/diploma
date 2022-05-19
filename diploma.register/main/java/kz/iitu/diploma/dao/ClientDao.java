@@ -1,7 +1,10 @@
 package kz.iitu.diploma.dao;
 
 import kz.iitu.diploma.model.auth.UserInfo;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -27,4 +30,7 @@ public interface ClientDao {
       "left join client_token_storage ct on ct.client_id = client.id and ct.actual = true\n" +
       "where ct.id=#{tokenId} and client.actual=true")
   UserInfo getUserInfo(String tokenId);
+
+  @Update("update client set password=#{password} where id = #{id}")
+  void updatePassword(@Param(value = "id") Long id, @Param(value = "password") String password);
 }

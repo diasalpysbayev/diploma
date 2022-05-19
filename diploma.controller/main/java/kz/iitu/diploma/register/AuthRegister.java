@@ -22,4 +22,6 @@ public interface AuthRegister {
   void updateDate(ClientRegisterRecord registerRecord);
 
   UserInfo getUserInfo(String tokenId);
+
+  void recovery(String phoneNumber, String password);
 }

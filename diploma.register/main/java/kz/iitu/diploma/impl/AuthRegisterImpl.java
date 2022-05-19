@@ -208,4 +208,9 @@ public class AuthRegisterImpl implements AuthRegister {
     return clientDao.getUserInfo(tokenId);
   }
 
+  @Override
+  public void recovery(String phoneNumber, String password) {
+    Long clientId = authDao.getClientByPhoneAndPassword(phoneNumber).id;
+    clientDao.updatePassword(clientId, passwordEncoder.encode(password));
+  }
 }

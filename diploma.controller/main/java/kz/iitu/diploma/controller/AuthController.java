@@ -60,4 +60,9 @@ public class AuthController {
     return authRegister.getUserInfo(tokenId);
   }
 
+  @PostMapping("/recover-password")
+  public void recover(@RequestParam(value = "phoneNumber") String phoneNumber, @RequestParam(value = "password") String password) {
+    authRegister.recovery(phoneNumber, password);
+  }
+
 }
