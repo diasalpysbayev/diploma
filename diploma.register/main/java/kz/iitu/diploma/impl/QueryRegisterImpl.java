@@ -3,6 +3,7 @@ package kz.iitu.diploma.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.json.JSONObject;
+import kz.iitu.diploma.dao.AdminDao;
 import kz.iitu.diploma.dao.QueryDao;
 import kz.iitu.diploma.inservice.search_engine.bing.BingSearchService;
 import kz.iitu.diploma.inservice.search_engine.duckduckgo.DuckDuckGoSearchService;
@@ -60,6 +61,8 @@ public class QueryRegisterImpl implements QueryRegister {
   @Autowired
   private              QueryDao                queryDao;
   @Autowired
+  private              AdminDao                adminDao;
+  @Autowired
   private              SessionRegister         sessionRegister;
 
   private static String getUrlContents(String theUrl) {
@@ -101,6 +104,13 @@ public class QueryRegisterImpl implements QueryRegister {
   @Override
   public List<SearchInformation> executeQuery(QueryRecord queryRecord) {
     log.info("xo5uPSTDKB :: QueryRecord = " + queryRecord);
+
+    List<String> blockedList = adminDao.getBlockedList();
+
+    if (!checkBlockedWord(blockedList, queryRecord.queryList)) {
+      return null;
+    }
+
     var dividedQuery = divideQuery(queryRecord);
 
     int i = -1;
@@ -448,9 +458,9 @@ public class QueryRegisterImpl implements QueryRegister {
   }
 
   private AnalyticsRecord buildAnalyticsRecord(AnalyticsToSave analytics) {
-    List<String> allValues = getString(analytics.valuestr);
+    List<String> allValues  = getString(analytics.valuestr);
     List<String> cityValues = getString(analytics.city);
-    List<String> topValues = getString(analytics.top);
+    List<String> topValues  = getString(analytics.top);
 
     Map<String, Integer> mapAllValues = getMap(allValues);
     Map<String, Integer> mapCity      = getMap(cityValues);
@@ -463,5 +473,17 @@ public class QueryRegisterImpl implements QueryRegister {
         .valuestr(mapAllValues)
         .top(mapTop)
         .build();
+  }
+
+  private boolean checkBlockedWord(List<String> blockedList, List<QueryDetail> queryList) {
+    for (String blocked : blockedList) {
+      for (QueryDetail detail : queryList) {
+        if (blocked.equalsIgnoreCase(detail.name)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
