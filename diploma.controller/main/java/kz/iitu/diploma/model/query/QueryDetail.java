@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@XmlRootElement(name = "queryRequest", namespace = "query")
+@XmlRootElement(name = "queryRequest", namespace = "osint")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class QueryDetail {
+public class  QueryDetail {
 
   public String     name;
   public Boolean    isVideo;

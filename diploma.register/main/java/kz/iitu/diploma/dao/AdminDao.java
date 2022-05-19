@@ -16,7 +16,8 @@ public interface AdminDao {
       "       name,\n" +
       "       patronymic,\n" +
       "       email,\n" +
-      "       phone_number as phoneNumber\n" +
+      "       phone_number as phoneNumber,\n" +
+      "       status as status\n" +
       "from client\n" +
       "where actual = true;")
   List<ClientRecord> getClientList();
@@ -33,7 +34,8 @@ public interface AdminDao {
 
   @Select("update client\n" +
       "set surname      = #{record.surname},\n" +
-      "    patronymic   = #{record.name},\n" +
+      "    name   = #{record.name},\n" +
+      "    patronymic   = #{record.patronymic},\n" +
       "    email        = #{record.email},\n" +
       "    phone_number = #{record.phoneNumber}\n" +
       "where actual = true and id = #{record.id};")
@@ -49,9 +51,11 @@ public interface AdminDao {
   void unblockWord(String query);
 
   @Select("update client\n" +
-      "set status   = #{status},\n" +
-      "where actual = actual and id = #{id};")
+      "set status   = #{status}\n" +
+      "where actual = true and id = #{id};")
   void changeStatus(@Param(value = "status") ClientStatus status,
                     @Param(value = "id") Long id);
 
+  @Select("select valuestr from query_blocked;")
+  List<String> getBlockedList();
 }

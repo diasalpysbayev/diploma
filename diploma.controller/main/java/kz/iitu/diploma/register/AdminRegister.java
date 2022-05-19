@@ -21,4 +21,6 @@ public interface AdminRegister {
 
   void changeStatus(ClientStatus status, Long id);
 
+  List<String> getBlockedWords();
+
 }

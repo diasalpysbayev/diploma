@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/query")
+@RequestMapping("/admin")
 public class AdminController {
 
   @Autowired
@@ -44,6 +44,11 @@ public class AdminController {
   @PostMapping("/change-status")
   public void changeStatus(@Param(value = "status") ClientStatus status, @Param(value = "id") Long id) {
     adminRegister.changeStatus(status, id);
+  }
+
+  @GetMapping("/get-blocked-words")
+  public List<String> getBlockedWords() {
+    return adminRegister.getBlockedWords();
   }
 
 }

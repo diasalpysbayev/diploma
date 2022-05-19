@@ -58,4 +58,9 @@ public class AdminRegisterImpl implements AdminRegister {
   public void changeStatus(ClientStatus status, Long id) {
     adminDao.changeStatus(status, id);
   }
+
+  @Override
+  public List<String> getBlockedWords() {
+    return adminDao.getBlockedList();
+  }
 }

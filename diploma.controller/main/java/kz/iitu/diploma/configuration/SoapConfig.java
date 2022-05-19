@@ -26,9 +26,9 @@ public class SoapConfig {
   @Bean(name = "query")
   public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema schema) {
     DefaultWsdl11Definition defaultWsdl11Definition = new DefaultWsdl11Definition();
-    defaultWsdl11Definition.setPortTypeName("query");
+    defaultWsdl11Definition.setPortTypeName("QueryPort");
     defaultWsdl11Definition.setLocationUri("/ws");
-    defaultWsdl11Definition.setTargetNamespace("query");
+    defaultWsdl11Definition.setTargetNamespace("osint");
     defaultWsdl11Definition.setSchema(schema);
     return defaultWsdl11Definition;
   }
