@@ -478,7 +478,7 @@ public class QueryRegisterImpl implements QueryRegister {
   private boolean checkBlockedWord(List<String> blockedList, List<QueryDetail> queryList) {
     for (String blocked : blockedList) {
       for (QueryDetail detail : queryList) {
-        if (blocked.toLowerCase().contains(detail.name.toLowerCase())) {
+        if (detail.name.toLowerCase().contains(blocked.toLowerCase())) {
           return true;
         }
       }
