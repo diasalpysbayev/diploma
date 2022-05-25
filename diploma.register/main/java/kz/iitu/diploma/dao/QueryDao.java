@@ -1,7 +1,9 @@
 package kz.iitu.diploma.dao;
 
 import kz.iitu.diploma.model.analytics.AnalyticsToSave;
+import kz.iitu.diploma.model.query.QueryHistory;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
+import kz.iitu.diploma.model.search_engine.SearchInformation;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -50,4 +52,17 @@ public interface QueryDao {
       "values (#{record.id}, #{record.queryId}, #{record.valuestr}, #{record.top}, #{record.city}) " +
       "on conflict (id, query_id) do nothing")
   void insertAnalytics(@Param(value = "record") AnalyticsToSave record);
+
+  @Select("select qi.id as id, query_id as queryId, url, title, latitude, longitude, rating, description, address, phone " +
+      "from query_info qi " +
+      "left join query q on q.id = qi.query_id and q.actual = true " +
+      "where client_id = #{id} " +
+      "  and qi.actual = true;")
+  List<SearchInformation> getHistory(@Param(value = "id") Long id);
+
+  @Select("select id " +
+      "from query " +
+      "where client_id = #{id} " +
+      "  and actual = true;")
+  List<Long> getClientQueryIds(Long id);
 }

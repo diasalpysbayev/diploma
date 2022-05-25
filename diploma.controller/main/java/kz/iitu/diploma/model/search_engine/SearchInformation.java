@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "searchInformation")
 public class SearchInformation {
 
+  public Long queryId;
   public String url;
   public String title;
   @XmlElement(name = "placeInfo")

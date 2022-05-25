@@ -14,6 +14,7 @@ import kz.iitu.diploma.inservice.search_engine.youtube.YouTubeService;
 import kz.iitu.diploma.model.analytics.AnalyticsRecord;
 import kz.iitu.diploma.model.analytics.AnalyticsToSave;
 import kz.iitu.diploma.model.query.QueryDetail;
+import kz.iitu.diploma.model.query.QueryHistory;
 import kz.iitu.diploma.model.query.QueryRecord;
 import kz.iitu.diploma.model.search_engine.PlaceInfo;
 import kz.iitu.diploma.model.search_engine.QueryResult;
@@ -152,12 +153,13 @@ public class QueryRegisterImpl implements QueryRegister {
     searchInformationList.addAll(parseResult(googleMapsResult, "google-maps"));
 
     var queryId = queryDao.nextQueryId();
-    queryDao.saveQuery(queryId, sessionRegister.getPrincipal(), queryRecord.queryList.toString());
+    queryDao.saveQuery(queryId, queryRecord.clientId, queryRecord.queryList.toString());
 
-    searchInformationList.forEach(searchInformation -> {
+    for (SearchInformation searchInformation : searchInformationList) {
       var queryInfoId = queryDao.nextQueryInfoId();
+      searchInformation.queryId = queryId;
       queryDao.saveQueryInfo(queryInfoId, queryId, searchInformation.title, searchInformation.url, searchInformation.placeInfo);
-    });
+    }
 
     return searchInformationList;
   }
@@ -485,5 +487,22 @@ public class QueryRegisterImpl implements QueryRegister {
     }
 
     return false;
+  }
+
+  @Override
+  public List<QueryHistory> getQueryHistory(Long id) {
+    List<Long>              ids                   = queryDao.getClientQueryIds(id);
+    List<QueryHistory>      queryHistoryList      = new ArrayList<>();
+
+    for (Long clientId : ids) {
+      List<SearchInformation> history = queryDao.getHistory(clientId);
+      if (history.size() > 0) {
+        QueryHistory queryHistory = new QueryHistory();
+        queryHistory.searchInformationList = history;
+        queryHistoryList.add(queryHistory);
+      }
+    }
+
+    return queryHistoryList;
   }
 }
